@@ -1,0 +1,9 @@
+{
+    "name" : "nice-route53",
+    "description" : "a nicer API to Amazon's Route53",
+    "version" : "0.1.0",
+
+    "dependencies" : {
+        "awssum-amazon-route53" : "1.x"
+    }
+}
