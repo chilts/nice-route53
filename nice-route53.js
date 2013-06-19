@@ -37,6 +37,14 @@ function convertListHostedZonesResponse(response) {
     return zones;
 }
 
+function makeError(err) {
+    return {
+        type : err.Body.ErrorResponse.Error.Type,
+        code : err.Body.ErrorResponse.Error.Code,
+        msg  : err.Body.ErrorResponse.Error.Message,
+    };
+}
+
 // ----------------------------------------------------------------------------
 // the external API
 
@@ -60,18 +68,27 @@ Route53.prototype.zones = function(callback) {
         if ( nextMarker ) {
             args.Marker = nextMarker;
         }
-        self.client.ListHostedZones(args, function(err, result) {
+        self.client.ListHostedZones(args, function(err, response) {
             if (err) {
-                return callback('Something went wrong');
+                if ( err.Code === 'AwsSum-Request' ) {
+                    return callback({
+                        type    : 'Request',
+                        code    : err.OriginalError.code,
+                        msg     : '' + err.OriginalError,
+                        syscall : err.OriginalError.syscall,
+                        errno   : err.OriginalError.errno,
+                    });
+                }
+                return callback(makeError(err));
             }
 
             // shortcut to the real response and save the zones
-            var hostedZones = result.Body.ListHostedZonesResponse.HostedZones.HostedZone;
+            var hostedZones = response.Body.ListHostedZonesResponse.HostedZones.HostedZone;
             zones = zones.concat(convertListHostedZonesResponse(hostedZones));
 
             // if this response contains IsTruncated, then we need to re-query
-            if ( result.Body.ListHostedZonesResponse.IsTruncated === 'true' ) {
-                return listHostedZones(result.Body.ListHostedZonesResponse.NextMarker, callback);
+            if ( response.Body.ListHostedZonesResponse.IsTruncated === 'true' ) {
+                return listHostedZones(response.Body.ListHostedZonesResponse.NextMarker, callback);
             }
 
             callback(null, zones);
