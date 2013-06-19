@@ -7,9 +7,23 @@
                                                            
 ```
 
-## nice-route53 ##
+This package provides the API you really wanted to Amazon's Route53 service. It uses AwsSum's
+[awssum-amazon-route53](https://github.com/awssum/awssum-amazon-route53) to talk to the real API.
 
+## Synopsis ##
 
+```
+var Route53 = require('nice-route53');
+
+var r53 = new Route53({
+    accessKeyId     : process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey : process.env.AWS_SECRET_ACCESS_KEY,
+});
+
+r53.zones(function(err, domains) {
+    console.log(domains);
+});
+```
 
 ## Operations ##
 
