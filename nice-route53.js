@@ -85,18 +85,7 @@ Route53.prototype.zones = function(callback) {
             args.Marker = nextMarker;
         }
         self.client.ListHostedZones(args, function(err, response) {
-            if (err) {
-                if ( err.Code === 'AwsSum-Request' ) {
-                    return callback({
-                        type    : 'Request',
-                        code    : err.OriginalError.code,
-                        msg     : '' + err.OriginalError,
-                        syscall : err.OriginalError.syscall,
-                        errno   : err.OriginalError.errno,
-                    });
-                }
-                return callback(makeError(err));
-            }
+            if (err) return callback(makeError(err));
 
             // shortcut to the real response and save the zones
             var hostedZones = response.Body.ListHostedZonesResponse.HostedZones.HostedZone;
