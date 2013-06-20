@@ -113,24 +113,11 @@ If you provide a ```zoneId``` then ```zoneInfo()``` will use the ```GetHostedZon
 
 ### .records() ###
 
-This command returns a list of all of the resource records for the ```zoneId``` provided. You may also provide a
-```type``` to get records of only that type.
+This command returns a list of all of the resource records for the ```zoneId``` provided:
 
 ```
 var args = {
     zoneId : 'xxxxxxxxxxxxxx',
-};
-r53.records(args, function(err, records) {
-    console.log(records);
-});
-```
-
-To get records of only type 'A', try this:
-
-```
-var args = {
-    zoneId : 'xxxxxxxxxxxxxx',
-    type   : 'A',
 };
 r53.records(args, function(err, records) {
     console.log(records);

@@ -238,24 +238,21 @@ Route53.prototype.createZone = function(args, poll, callback) {
     });
 };
 
-Route53.prototype.records = function(args, callback) {
+Route53.prototype.records = function(opts, callback) {
     var self = this;
 
     // create the args
     var args = {
-        HostedZoneId : args.zoneId,
+        HostedZoneId : opts.zoneId,
     };
-    if ( args.type ) {
-        args.Type = args.type;
-    }
 
     // save the records somewhere
     var records = [];
 
     function listResourceRecords(nextName, nextType, nextIdentifier, callback) {
         if ( nextName ) {
-            args.Name       = nextName;
-            args.Type       = nextType;
+            args.Name = nextName;
+            args.Type = nextType;
             if ( nextIdentifier ) {
                 args.Identifier = nextIdentifier;
             }
