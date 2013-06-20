@@ -31,7 +31,7 @@ function convertListHostedZonesResponse(response) {
 
     response.forEach(function(zone) {
         zones.push({
-            id        : extractZoneId(zone.Id),
+            zoneId    : extractZoneId(zone.Id),
             name      : zone.Name.substr(0, zone.Name.length-1),
             reference : zone.CallerReference,
             comment   : zone.Config && zone.Config.Comment,
@@ -47,7 +47,7 @@ function convertGetHostedZoneResponseToZoneInfo(response) {
     var hostedZone = info.HostedZone;
 
     var zone = {
-        id          : extractZoneId(hostedZone.Id),
+        zoneId      : extractZoneId(hostedZone.Id),
         name        : hostedZone.Name.substr(0, hostedZone.Name.length-1),
         reference   : hostedZone.CallerReference,
     };

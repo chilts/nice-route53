@@ -41,11 +41,11 @@ route53.zones(function(err, zones) {
 An example of a list of zones is:
 
 ```
-[ { id: 'xxxxxxxxxxxxxx',
+[ { zoneId: 'xxxxxxxxxxxxxx',
     name: 'chilts.org',
     reference: 'chilts.org',
     comment: '' },
-  { id: 'xxxxxxxxxxxxxx',
+  { zoneId: 'xxxxxxxxxxxxxx',
     name: 'example.com',
     reference: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
     comment: 'Created 2013-06-14' } ]
@@ -62,7 +62,7 @@ route53.createZone(function(err, zone) {
 An example of a new zone is:
 
 ```
-{ id: 'xxxxxxxxxxxxxx',
+{ zoneId: 'xxxxxxxxxxxxxx',
   name: 'example.org',
   reference: 'example.org',
   status: 'PENDING',
@@ -97,7 +97,7 @@ r53.zoneInfo('xxxxxxxxxxxxx', function(err, zoneInfo) {
 An example of the zoneInfo is:
 
 ```
-{ id: 'xxxxxxxxxxxxx',
+{ zoneId: 'xxxxxxxxxxxxx',
   name: 'example.com',
   reference: 'example.com',
   nameServers:
