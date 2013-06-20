@@ -69,6 +69,35 @@ function convertGetHostedZoneResponseToZoneInfo(response) {
     return zone;
 }
 
+function convertListResourceRecordSetsResponseToRecords(response) {
+    var recordSets = response.ResourceRecordSets.ResourceRecordSet;
+
+    if ( !Array.isArray(recordSets) ) {
+        recordSets = [ recordSets ];
+    }
+
+    var records = [];
+    recordSets.forEach(function(recordSet) {
+        var record = {
+            name : recordSet.Name,
+            type : recordSet.Type,
+            ttl  : recordSet.TTL,
+        };
+
+        var resourceRecords = recordSet.ResourceRecords.ResourceRecord;
+        if ( !Array.isArray(resourceRecords) ) {
+            resourceRecords = [ resourceRecords ];
+        }
+        record.values = resourceRecords.map(function(rr) {
+            return rr.Value;
+        });
+
+        records.push(record);
+    });
+
+    return records;
+}
+
 function makeError(err) {
     // if this is an error from AwsSum
     if ( err.Code === 'AwsSum-Request' ) {
@@ -207,7 +236,58 @@ Route53.prototype.createZone = function(args, poll, callback) {
 
         callback(null, zone);
     });
-}
+};
+
+Route53.prototype.records = function(args, callback) {
+    var self = this;
+
+    // create the args
+    var args = {
+        HostedZoneId : args.zoneId,
+    };
+    if ( args.type ) {
+        args.Type = args.type;
+    }
+
+    // save the records somewhere
+    var records = [];
+
+    function listResourceRecords(nextName, nextType, nextIdentifier, callback) {
+        if ( nextName ) {
+            args.Name       = nextName;
+            args.Type       = nextType;
+            if ( nextIdentifier ) {
+                args.Identifier = nextIdentifier;
+            }
+        }
+
+        // get the records
+        self.client.ListResourceRecordSets(args, function(err, result) {
+            if (err) return callback(makeError(err));
+
+            var response = result.Body.ListResourceRecordSetsResponse;
+
+            // add these records onto the list
+            var newRecords = convertListResourceRecordSetsResponseToRecords(response);
+            records = records.concat(newRecords);
+
+            // if this response contains IsTruncated, then we need to re-query
+            if ( response.IsTruncated === 'true' ) {
+                return listResourceRecords(
+                    response.NextRecordName,
+                    response.NextRecordType,
+                    response.NextRecordIdentifier,
+                    callback
+                );
+            }
+
+            callback(null, records);
+        });
+    }
+
+    // start this operation
+    listResourceRecords(null, null, null, callback);
+};
 
 // ----------------------------------------------------------------------------
 

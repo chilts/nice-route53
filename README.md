@@ -111,6 +111,57 @@ If you provide a ```zoneId``` then ```zoneInfo()``` will use the ```GetHostedZon
 ```domainName```, then the ```.zones()``` operation is called first, the correct zone found and then
 ```GetHostedZone``` is called with the ```zoneId```.
 
+### .records() ###
+
+This command returns a list of all of the resource records for the ```zoneId``` provided. You may also provide a
+```type``` to get records of only that type.
+
+```
+var args = {
+    zoneId : 'xxxxxxxxxxxxxx',
+};
+r53.records(args, function(err, records) {
+    console.log(records);
+});
+```
+
+To get records of only type 'A', try this:
+
+```
+var args = {
+    zoneId : 'xxxxxxxxxxxxxx',
+    type   : 'A',
+};
+r53.records(args, function(err, records) {
+    console.log(records);
+});
+```
+
+The records returned look like:
+
+```
+[ { name: 'example.net.',
+    type: 'A',
+    ttl: '300',
+    values: [ '192.168.1.1' ] },
+  { name: 'example.net.',
+    type: 'NS',
+    ttl: '172800',
+    values:
+     [ 'ns-xxx.awsdns-xx.net.',
+       'ns-xxx.awsdns-xx.com.',
+       'ns-xxx.awsdns-xx.org.',
+       'ns-xxx.awsdns-xx.co.uk.' ] },
+  { name: 'example.net.',
+    type: 'SOA',
+    ttl: '900',
+    values: [ 'ns-xxx.awsdns-xx.net. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400' ] },
+  { name: 'localhost.example.net.',
+    type: 'A',
+    ttl: '604800',
+    values: [ '127.0.0.1' ] } ]
+```
+
 ## License ##
 
 [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
