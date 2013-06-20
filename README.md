@@ -47,7 +47,7 @@ An example of a list of zones is:
     comment: '' },
   { id: 'xxxxxxxxxxxxxx',
     name: 'example.com',
-    reference: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',,
+    reference: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
     comment: 'Created 2013-06-14' } ]
 ```
 
@@ -89,7 +89,7 @@ You can either call this with a ```domainName``` or a ```zoneId```. In both case
 r53.zoneInfo('chilts.org', function(err, zoneInfo) {
     console.log(zoneInfo);
 });
-r53.zoneInfo('ZYTGF6CI42UVT', function(err, zoneInfo) {
+r53.zoneInfo('xxxxxxxxxxxxx', function(err, zoneInfo) {
     console.log(zoneInfo);
 });
 ```
