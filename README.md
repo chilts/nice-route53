@@ -81,6 +81,36 @@ is so that you will get an error if you try to create a second zone for the same
 create a 2nd zone for the same domain name, you should use the low-level API for ```CreateHostedZone``` that
 awssum-amazon-route53 provides - this library won't do that for you.
 
+### .zoneInfo() ###
+
+You can either call this with a ```domainName``` or a ```zoneId```. In both cases you'll get the zone info back:
+
+```
+r53.zoneInfo('chilts.org', function(err, zoneInfo) {
+    console.log(zoneInfo);
+});
+r53.zoneInfo('ZYTGF6CI42UVT', function(err, zoneInfo) {
+    console.log(zoneInfo);
+});
+```
+
+An example of the zoneInfo is:
+
+```
+{ id: 'xxxxxxxxxxxxx',
+  name: 'example.com',
+  reference: 'example.com',
+  nameServers:
+   [ 'ns-xxx.awsdns-xx.org',
+     'ns-xxx.awsdns-xx.co.uk',
+     'ns-xxx.awsdns-xx.net',
+     'ns-xxx.awsdns-xx.com' ] }
+```
+
+If you provide a ```zoneId``` then ```zoneInfo()``` will use the ```GetHostedZone``` operation. If you have provided a
+```domainName```, then the ```.zones()``` operation is called first, the correct zone found and then
+```GetHostedZone``` is called with the ```zoneId```.
+
 ## License ##
 
 [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)

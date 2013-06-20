@@ -41,6 +41,34 @@ function convertListHostedZonesResponse(response) {
     return zones;
 }
 
+function convertGetHostedZoneResponseToZoneInfo(response) {
+    var info = response.Body.GetHostedZoneResponse;
+
+    var hostedZone = info.HostedZone;
+
+    var zone = {
+        id          : extractZoneId(hostedZone.Id),
+        name        : hostedZone.Name.substr(0, hostedZone.Name.length-1),
+        reference   : hostedZone.CallerReference,
+    };
+
+    if ( info.ChangeInfo ) {
+        zone.status      = info.ChangeInfo.Status;
+        zone.submittedAt = info.ChangeInfo.SubmittedAt;
+        zone.changeId    = extractChangeId(info.ChangeInfo.Id);
+    }
+
+    if ( info.DelegationSet ) {
+        zone.nameServers = info.DelegationSet.NameServers.NameServer;
+    }
+
+    if ( hostedZone.Config && hostedZone.Config.Comment ) {
+        zone.comment = hostedZone.Config.Comment;
+    }
+
+    return zone;
+}
+
 function makeError(err) {
     // if this is an error from AwsSum
     if ( err.Code === 'AwsSum-Request' ) {
@@ -102,6 +130,33 @@ Route53.prototype.zones = function(callback) {
 
     // start this operation
     listHostedZones(null, callback);
+};
+
+// takes either a zoneId or a domainName
+Route53.prototype.zoneInfo = function(input, callback) {
+    var self = this;
+
+    // if this looks like a domainName
+    if ( input.match(/\./) ) {
+        self.zones(function(err, zones) {
+            if (err) return callback(err);
+            zones.forEach(function(zone) {
+                // if we find this domain name, then call zoneInfo() with the zoneId
+                if ( zone.name === input ) {
+                    self.zoneInfo(zone.id, callback);
+                }
+            });
+        });
+    }
+    else {
+        // looks like a zoneId, so just call GetHostedZone
+        self.client.GetHostedZone({ HostedZoneId : input }, function(err, response) {
+            if (err) return callback(makeError(err));
+
+            var zoneInfo = convertGetHostedZoneResponseToZoneInfo(response);
+            callback(null, zoneInfo);
+        });
+    }
 };
 
 Route53.prototype.createZone = function(args, poll, callback) {
