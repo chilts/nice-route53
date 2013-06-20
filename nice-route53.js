@@ -16,6 +16,10 @@ function extractZoneId(id) {
     return m[1];
 }
 
+function extractChangeId(id) {
+    return id.match(/^\/change\/(.+)$/)[1];
+}
+
 function convertListHostedZonesResponse(response) {
     // the list to return
     var zones = [];
@@ -38,6 +42,18 @@ function convertListHostedZonesResponse(response) {
 }
 
 function makeError(err) {
+    // if this is an error from AwsSum
+    if ( err.Code === 'AwsSum-Request' ) {
+        return {
+            type    : 'Request',
+            code    : err.OriginalError.code,
+            msg     : '' + err.OriginalError,
+            syscall : err.OriginalError.syscall,
+            errno   : err.OriginalError.errno,
+        };
+    }
+
+    // an error from AWS itself
     return {
         type : err.Body.ErrorResponse.Error.Type,
         code : err.Body.ErrorResponse.Error.Code,
@@ -98,6 +114,56 @@ Route53.prototype.zones = function(callback) {
     // start this operation
     listHostedZones(null, callback);
 };
+
+Route53.prototype.createZone = function(args, poll, callback) {
+    var self = this;
+
+    // see if the user wants to poll for status completion
+    if ( typeof poll === 'function' ) {
+        callback = poll;
+        poll = undefined;
+    }
+
+    var realArgs = {
+        Name            : args.name,
+        CallerReference : args.name,
+    };
+
+    if ( args.comment ) {
+        realArgs.Comment = args.comment;
+    }
+
+    self.client.CreateHostedZone(realArgs, function(err, response) {
+        if (err) {
+            err = makeError(err);
+            return callback(err);
+        }
+
+        // get the interesting info
+        var info = response.Body.CreateHostedZoneResponse;
+
+        var hostedZone = info.HostedZone;
+        var changeInfo = info.ChangeInfo;
+        var delegationSet = info.DelegationSet;
+
+        var zone = {
+            id          : extractZoneId(hostedZone.Id),
+            name        : hostedZone.Name.substr(0, hostedZone.Name.length-1),
+            reference   : hostedZone.CallerReference,
+            status      : changeInfo.Status,
+            submittedAt : changeInfo.SubmittedAt,
+            changeId    : extractChangeId(changeInfo.Id),
+            nameServers : delegationSet.NameServers.NameServer,
+        };
+        if ( hostedZone.Config && hostedZone.Config.Comment ) {
+            zone.comment = hostedZone.Config.Comment;
+        }
+
+        // ToDo: if poll has been given, subscribe to the change
+
+        callback(null, zone);
+    });
+}
 
 // ----------------------------------------------------------------------------
 
