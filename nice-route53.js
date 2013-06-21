@@ -123,6 +123,17 @@ function convertChangeResourceRecordSetsResponseToChangeInfo(response) {
     };
 }
 
+function convertGetChangeResponseToChangeInfo(response) {
+    var changeInfo = response.Body.GetChangeResponse.ChangeInfo;
+
+    return {
+        changeId    : extractChangeId(changeInfo.Id),
+        url         : changeInfo.Id,
+        status      : changeInfo.Status,
+        submittedAt : changeInfo.SubmittedAt,
+    };
+}
+
 function makeError(err) {
     // if this is an error from AwsSum
     if ( err.Code === 'AwsSum-Request' ) {
@@ -365,10 +376,20 @@ Route53.prototype.setRecord = function(opts, callback) {
         self.client.ChangeResourceRecordSets(args, function(err, result) {
             if (err) return callback(makeError(err));
 
-            fmt.dump(result, 'result');
             var response = convertChangeResourceRecordSetsResponseToChangeInfo(result);
             callback(null, response);
         });
+    });
+};
+
+Route53.prototype.getChange = function(changeId, callback) {
+    var self = this;
+
+    self.client.GetChange({ ChangeId : changeId }, function(err, result) {
+        if (err) return callback(makeError(err));
+
+        var response = convertGetChangeResponseToChangeInfo(result);
+        callback(null, response);
     });
 };
 

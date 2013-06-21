@@ -178,6 +178,25 @@ Will give a changeset such as:
   submittedAt: '2013-06-21T00:03:26.297Z' }
 ```
 
+### .getChange() ###
+
+This gets you a changeInfo response from a ```changeId```:
+
+```
+r53.getChange('xxxxxxxxxxxxxx', function(err, res) {
+    console.log(res);
+});
+```
+
+Will give a changeset such as:
+
+```
+{ changeId: 'xxxxxxxxxxxxxx',
+  url: '/change/xxxxxxxxxxxxxx',
+  status: 'INSYNC',
+  submittedAt: '2013-06-21T00:03:26.297Z' }
+```
+
 ## License ##
 
 [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
