@@ -6,6 +6,10 @@
 //
 // ----------------------------------------------------------------------------
 
+// core
+var events = require('events');
+
+// npm
 var awssumAmazonRoute53 = require('awssum-amazon-route53');
 
 // ----------------------------------------------------------------------------
@@ -391,6 +395,41 @@ Route53.prototype.getChange = function(changeId, callback) {
         var response = convertGetChangeResponseToChangeInfo(result);
         callback(null, response);
     });
+};
+
+// the EventEmitter that is returned can emit 'attempt', 'pending', 'insync' and 'error'
+Route53.prototype.pollChangeUntilInSync = function(changeId, pollEvery) {
+    var self = this;
+
+    // firstly, create an event emitter
+    var ee = new events.EventEmitter();
+
+    // poll for the change
+    function poll() {
+        self.getChange(changeId, function(err, changeInfo) {
+            if (err) {
+                return ee.emit('error', err);
+            }
+
+            ee.emit('attempt', changeInfo);
+
+            if ( changeInfo.status === 'PENDING' ) {
+                ee.emit('pending', changeInfo);
+                setTimeout(poll, pollEvery * 1000);
+            }
+            else if ( changeInfo.status === 'INSYNC' ) {
+                ee.emit('insync', changeInfo);
+            }
+            else {
+                ee.emit('error', changeInfo);
+            }
+        });
+    }
+
+    // start it off
+    poll();
+
+    return ee;
 };
 
 // ----------------------------------------------------------------------------

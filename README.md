@@ -197,6 +197,32 @@ Will give a changeset such as:
   submittedAt: '2013-06-21T00:03:26.297Z' }
 ```
 
+## Polling for Status Changes ##
+
+### .pollChangeUntilInSync() ###
+
+Once you have called either ```.createZone()``` or ```.setRecord()```, you will have access to a ```changeId```. You
+could do polling yourself using ```.getChange()``` or you could use this command to help you.
+
+```
+var ee = r53.pollChangeUntilInSync(res.changeId, 10);
+ee.on('attempt', function(changeInfo) {
+    console.log('Attempted a poll');
+});
+ee.on('pending', function(changeInfo) {
+    console.log('Still PENDING:', changeInfo);
+});
+ee.on('insync', function(changeInfo) {
+    console.log('Now INSYNC:', changeInfo);
+});
+ee.on('error', function(err) {
+    console.log('error:', err);
+});
+```
+
+Note: 'attempt' is emitted once we receive the result of every ```.getChange()```, irrespective of whether the status
+is still PENDING or INSYNC. Only one of 'pending' or 'insync' is emitted after every 'attempt'.
+
 ## License ##
 
 [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
