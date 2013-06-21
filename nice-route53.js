@@ -228,13 +228,13 @@ Route53.prototype.zoneInfo = function(input, callback) {
     }
 };
 
-Route53.prototype.createZone = function(args, poll, callback) {
+Route53.prototype.createZone = function(args, pollEvery, callback) {
     var self = this;
 
     // see if the user wants to poll for status completion
-    if ( typeof poll === 'function' ) {
-        callback = poll;
-        poll = undefined;
+    if ( typeof pollEvery === 'function' ) {
+        callback = pollEvery;
+        pollEvery = undefined;
     }
 
     var realArgs = {
@@ -272,9 +272,13 @@ Route53.prototype.createZone = function(args, poll, callback) {
             zone.comment = hostedZone.Config.Comment;
         }
 
-        // ToDo: if poll has been given, subscribe to the change
+        // if we want to poll for when this change is INSYNC, do it now
+        var ee;
+        if ( pollEvery ) {
+            ee = self.pollChangeUntilInSync(zone.changeId, pollEvery);
+        }
 
-        callback(null, zone);
+        callback(null, zone, ee);
     });
 };
 
@@ -326,8 +330,14 @@ Route53.prototype.records = function(opts, callback) {
     listResourceRecords(null, null, null, callback);
 };
 
-Route53.prototype.setRecord = function(opts, callback) {
+Route53.prototype.setRecord = function(opts, pollEvery, callback) {
     var self = this;
+
+    // see if the user wants to poll for status completion
+    if ( typeof pollEvery === 'function' ) {
+        callback = pollEvery;
+        pollEvery = undefined;
+    }
 
     // ToDo: check that we have been given a 'zoneId', 'name', 'type', 'ttl' and 'values'.
 
@@ -380,8 +390,15 @@ Route53.prototype.setRecord = function(opts, callback) {
         self.client.ChangeResourceRecordSets(args, function(err, result) {
             if (err) return callback(makeError(err));
 
-            var response = convertChangeResourceRecordSetsResponseToChangeInfo(result);
-            callback(null, response);
+            var changeInfo = convertChangeResourceRecordSetsResponseToChangeInfo(result);
+
+            // if we want to poll for when this change is INSYNC, do it now
+            var ee;
+            if ( pollEvery ) {
+                ee = self.pollChangeUntilInSync(changeInfo.changeId, pollEvery);
+            }
+
+            callback(null, changeInfo, ee);
         });
     });
 };

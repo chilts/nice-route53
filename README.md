@@ -223,6 +223,40 @@ ee.on('error', function(err) {
 Note: 'attempt' is emitted once we receive the result of every ```.getChange()```, irrespective of whether the status
 is still PENDING or INSYNC. Only one of 'pending' or 'insync' is emitted after every 'attempt'.
 
+## Combined Changes with Polling ##
+
+For the various operations which add/change/remove a zone or record, you will receive a ```changeId``` in the callback
+(if successful). If you want to, you can then poll that change until it's status is 'INSYNC'.
+
+However, if you'd like to do all of this with the same command, you can provide a ```pollEvery``` value (in seconds) so
+that the operation will set it up for you.
+
+For example, let's say you add a new zone and then poll until it is 'INSYNC', you can do this, with the equivalent new
+call shown afterwards:
+
+```
+r53.createZone(args, function(err, zone) {
+    // error checking here
+
+    var ee = r53.pollChangeUntilInSync(zone.changeId, 10);
+    ee.on('insync', function(changeInfo) {
+        console.log('Now INSYNC:', changeInfo);
+    });
+});
+
+r53.createZone(args, 10, function(err, zone, ee) {
+    // error checking here
+
+    ee.on('insync', function(changeInfo) {
+        console.log('Now INSYNC:', changeInfo);
+    });
+});
+```
+
+In the cases where the change operation fails (ie. ```err``` is set, then both the ```zone``` and ```ee``` will be
+undefined.
+
+
 ## License ##
 
 [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
