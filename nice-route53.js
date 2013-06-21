@@ -20,6 +20,20 @@ function extractChangeId(id) {
     return id.match(/^\/change\/(.+)$/)[1];
 }
 
+function removeTrailingDotFromDomain(domain) {
+    if ( domain.match(/\.$/) ) {
+        return domain.substr(0, domain.length - 1 );
+    }
+    return domain;
+}
+
+function addTrailingDotToDomain(domain) {
+    if ( domain.match(/\.$/) ) {
+        return domain;
+    }
+    return domain + '.';
+}
+
 function convertListHostedZonesResponse(response) {
     // the list to return
     var zones = [];
@@ -96,6 +110,17 @@ function convertListResourceRecordSetsResponseToRecords(response) {
     });
 
     return records;
+}
+
+function convertChangeResourceRecordSetsResponseToChangeInfo(response) {
+    var changeInfo = response.Body.ChangeResourceRecordSetsResponse.ChangeInfo;
+
+    return {
+        changeId    : extractChangeId(changeInfo.Id),
+        url         : changeInfo.Id,
+        status      : changeInfo.Status,
+        submittedAt : changeInfo.SubmittedAt,
+    };
 }
 
 function makeError(err) {
@@ -284,6 +309,67 @@ Route53.prototype.records = function(opts, callback) {
 
     // start this operation
     listResourceRecords(null, null, null, callback);
+};
+
+Route53.prototype.setRecord = function(opts, callback) {
+    var self = this;
+
+    // ToDo: check that we have been given a 'zoneId', 'name', 'type', 'ttl' and 'values'.
+
+    // make sure the name has a trailing dot
+    opts.name = addTrailingDotToDomain(opts.name);
+
+    // create the args (Changes will be added once we know whether this record will be deleted first)
+    var args = {
+        HostedZoneId : opts.zoneId,
+        Changes      : [],
+    };
+    if ( opts.comment ) {
+        args.Comment = opts.comment;
+    }
+
+    // pull out all of the records
+    self.records({ zoneId : opts.zoneId}, function(err, records) {
+        if (err) return callback(err);
+
+        // loop through the records finding the one we want (if any)
+        var newRecord;
+        records.forEach(function(record) {
+            fmt.dump(record, 'record');
+            console.log('*** HERE *** ' + (opts.name === record.name && opts.type === record.type));
+            console.log('*** HERE *** ' + (opts.name === record.name));
+            console.log('*** HERE *** ' + (opts.type === record.type));
+            if ( opts.name === record.name && opts.type === record.type ) {
+                args.Changes.push({
+                    Action : 'DELETE',
+                    Name   : record.name,
+                    Type   : record.type,
+                    Ttl    : record.ttl,
+                    ResourceRecords : record.values,
+                });
+            }
+        });
+
+        // now add the new record
+        args.Changes.push({
+            Action : 'CREATE',
+            Name   : opts.name,
+            Type   : opts.type,
+            Ttl    : opts.ttl,
+            ResourceRecords : opts.values,
+        });
+
+        fmt.dump(args, 'args');
+
+        // send this changeset to Route53
+        self.client.ChangeResourceRecordSets(args, function(err, result) {
+            if (err) return callback(makeError(err));
+
+            fmt.dump(result, 'result');
+            var response = convertChangeResourceRecordSetsResponseToChangeInfo(result);
+            callback(null, response);
+        });
+    });
 };
 
 // ----------------------------------------------------------------------------

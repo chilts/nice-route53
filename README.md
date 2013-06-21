@@ -149,6 +149,35 @@ The records returned look like:
     values: [ '127.0.0.1' ] } ]
 ```
 
+### .setRecord() ###
+
+This command lets you set a record whether or not it already exists. If it exists it issues a DELETE on the old one and
+a CREATE for the new one. If it doesn't already exist, then it just issues a CREATE.
+
+```
+var args = {
+    zoneId : 'xxxxxxxxxxxxx',
+    name   : 'localhost.chilts.org',
+    type   : 'A',
+    ttl    : 600,
+    values : [
+        '127.0.0.1',
+    ],
+};
+r53.setRecord(args, function(err, res) {
+    console.log(res);
+});
+```
+
+Will give a changeset such as:
+
+```
+{ changeId: 'xxxxxxxxxxxxxx',
+  url: '/change/xxxxxxxxxxxxxx',
+  status: 'PENDING',
+  submittedAt: '2013-06-21T00:03:26.297Z' }
+```
+
 ## License ##
 
 [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
