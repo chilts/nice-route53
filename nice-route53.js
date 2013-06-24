@@ -360,10 +360,6 @@ Route53.prototype.setRecord = function(opts, pollEvery, callback) {
         // loop through the records finding the one we want (if any)
         var newRecord;
         records.forEach(function(record) {
-            fmt.dump(record, 'record');
-            console.log('*** HERE *** ' + (opts.name === record.name && opts.type === record.type));
-            console.log('*** HERE *** ' + (opts.name === record.name));
-            console.log('*** HERE *** ' + (opts.type === record.type));
             if ( opts.name === record.name && opts.type === record.type ) {
                 args.Changes.push({
                     Action : 'DELETE',
@@ -383,8 +379,6 @@ Route53.prototype.setRecord = function(opts, pollEvery, callback) {
             Ttl    : opts.ttl,
             ResourceRecords : opts.values,
         });
-
-        fmt.dump(args, 'args');
 
         // send this changeset to Route53
         self.client.ChangeResourceRecordSets(args, function(err, result) {
