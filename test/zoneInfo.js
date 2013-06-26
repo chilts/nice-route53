@@ -1,0 +1,41 @@
+// ----------------------------------------------------------------------------
+
+// npm
+var test = require('tape');
+var nock = require('nock');
+
+// local
+var Route53 = require('../nice-route53.js');
+
+// ----------------------------------------------------------------------------
+
+// create the mock server and client for Route53
+var route53 = nock('https://route53.amazonaws.com');
+var r53 = new Route53({
+    accessKeyId     : 'xxx',
+    secretAccessKey : 'xxx',
+});
+
+test('zoneInfo()', function(t) {
+    // mock the ListHostedZones
+    route53
+        .get('/2011-05-05/hostedzone/Z1PA6795UKMFR9')
+        .replyWithFile(200, __dirname + '/GetHostedZoneResponse.xml')
+    ;
+
+    // get the zones
+    r53.zoneInfo('Z1PA6795UKMFR9', function(err, zoneInfo) {
+        t.equal(err, null, 'There is no error');
+
+        t.equal(zoneInfo.zoneId, 'Z1PA6795UKMFR9', 'zoneId is correct');
+        t.equal(zoneInfo.name, 'example.com', 'name is correct');
+        t.equal(zoneInfo.reference, 'myUniqueIdentifier', 'reference is correct');
+        t.equal(zoneInfo.comment, 'This is my first hosted zone.', 'comment is correct');
+        t.equal(zoneInfo.nameServers.length, 4, 'four nameservers');
+
+        t.end();
+    });
+
+});
+
+// ----------------------------------------------------------------------------
