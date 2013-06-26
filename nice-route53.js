@@ -260,7 +260,7 @@ Route53.prototype.createZone = function(args, pollEvery, callback) {
         var delegationSet = info.DelegationSet;
 
         var zone = {
-            id          : extractZoneId(hostedZone.Id),
+            zoneId      : extractZoneId(hostedZone.Id),
             name        : hostedZone.Name.substr(0, hostedZone.Name.length-1),
             reference   : hostedZone.CallerReference,
             status      : changeInfo.Status,
