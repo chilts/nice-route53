@@ -17,28 +17,11 @@ var r53 = new Route53({
 });
 
 test('zones test, for one zone', function(t) {
-    // set up the response
-    var response = [
-        '<?xml version="1.0" encoding="UTF-8"?>',
-        '<ListHostedZonesResponse xmlns="https://route53.amazonaws.com/doc/2012-12-12/"> ',
-        '   <HostedZones>',
-        '      <HostedZone>',
-        '         <Id>/hostedzone/DEADBEEF1234</Id>',
-        '         <Name>example.com.</Name>',
-        '         <CallerReference>My Ref</CallerReference>',
-        '         <Config>',
-        '            <Comment>A Comment</Comment>',
-        '         </Config>',
-        '         <ResourceRecordSetCount>4</ResourceRecordSetCount>',
-        '      </HostedZone>',
-        '   </HostedZones>',
-        '   <IsTruncated>false</IsTruncated>',
-        '   <MaxItems>100</MaxItems>',
-        '</ListHostedZonesResponse>',
-    ].join("\n");
-
-    // mock the ListHostedZones
-    route53.get('/2011-05-05/hostedzone').reply(200, response);
+    // mock the response
+    route53
+        .get('/2011-05-05/hostedzone')
+        .replyWithFile(200, __dirname + '/ListHostedZonesResponse-1.xml')
+    ;
 
     // get the zones
     r53.zones(function(err, zones) {
@@ -56,37 +39,11 @@ test('zones test, for one zone', function(t) {
 });
 
 test('zones test, for two zones', function(t) {
-    // set up the response
-    var response = [
-        '<?xml version="1.0" encoding="UTF-8"?>',
-        '<ListHostedZonesResponse xmlns="https://route53.amazonaws.com/doc/2012-12-12/"> ',
-        '   <HostedZones>',
-        '      <HostedZone>',
-        '         <Id>/hostedzone/DEADBEEF1234</Id>',
-        '         <Name>example.com.</Name>',
-        '         <CallerReference>My Ref</CallerReference>',
-        '         <Config>',
-        '            <Comment>A Comment</Comment>',
-        '         </Config>',
-        '         <ResourceRecordSetCount>4</ResourceRecordSetCount>',
-        '      </HostedZone>',
-        '      <HostedZone>',
-        '         <Id>/hostedzone/CAFEBABE5678</Id>',
-        '         <Name>example.net.</Name>',
-        '         <CallerReference>My Ref</CallerReference>',
-        '         <Config>',
-        '            <Comment>A Comment</Comment>',
-        '         </Config>',
-        '         <ResourceRecordSetCount>4</ResourceRecordSetCount>',
-        '      </HostedZone>',
-        '   </HostedZones>',
-        '   <IsTruncated>false</IsTruncated>',
-        '   <MaxItems>100</MaxItems>',
-        '</ListHostedZonesResponse>',
-    ].join("\n");
-
-    // mock the ListHostedZones
-    route53.get('/2011-05-05/hostedzone').reply(200, response);
+    // mock the response
+    route53
+        .get('/2011-05-05/hostedzone')
+        .replyWithFile(200, __dirname + '/ListHostedZonesResponse-2.xml')
+    ;
 
     // get the zones
     r53.zones(function(err, zones) {

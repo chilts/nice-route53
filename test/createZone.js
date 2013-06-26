@@ -17,6 +17,7 @@ var r53 = new Route53({
 });
 
 test('createZone()', function(t) {
+    // mock the response
     route53
         .post('/2011-05-05/hostedzone')
         .replyWithFile(201, __dirname + '/CreateHostedZoneResponse.xml')

@@ -17,20 +17,11 @@ var r53 = new Route53({
 });
 
 test('getChange()', function(t) {
-    // set up the response : 
-    var response = [
-        '<?xml version="1.0" encoding="UTF-8"?>',
-        '<GetChangeResponse xmlns="https://route53.amazonaws.com/doc/2012-12-12/">',
-        '   <ChangeInfo>',
-        '      <Id>/change/ZERON0WTZIPP</Id>',
-        '      <Status>PENDING</Status>',
-        '      <SubmittedAt>2011-09-10T01:36:41.958Z</SubmittedAt>',
-        '   </ChangeInfo>',
-        '</GetChangeResponse>',
-    ].join("\n");
-
-    // mock the ListHostedZones
-    route53.get('/2011-05-05/change/ZERON0WTZIPP').reply(200, response);
+    // mock the response
+    route53
+        .get('/2011-05-05/change/ZERON0WTZIPP')
+        .replyWithFile(200, __dirname + '/GetChangeResponse.xml')
+    ;
 
     // get the zones
     r53.getChange('ZERON0WTZIPP', function(err, changeInfo) {
