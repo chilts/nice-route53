@@ -4,6 +4,20 @@
     "version" : "0.1.0",
 
     "dependencies" : {
-        "awssum-amazon-route53" : "1.x"
+        "awssum-amazon-route53" : "1.0.x"
+    },
+
+    "devDependencies" : {
+        "nock" : "0.18.x",
+        "tape" : "1.0.x"
+    },
+
+    "repository" : {
+        "type" : "git",
+        "url" : "https://github.com/chilts/nice-route53.git"
+    },
+
+    "scripts" : {
+        "test" : "for FILE in test/*.js; do node $FILE; done"
     }
 }
