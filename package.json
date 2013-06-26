@@ -18,6 +18,6 @@
     },
 
     "scripts" : {
-        "test" : "for FILE in test/*.js; do echo; echo ---; echo File: $FILE; echo; node $FILE; done; echo ---;"
+        "test" : "set -e; for FILE in test/*.js; do echo; echo ---; echo File: $FILE; echo; node $FILE; done; echo ---;"
     }
 }
