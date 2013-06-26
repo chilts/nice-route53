@@ -223,7 +223,7 @@ ee.on('error', function(err) {
 Note: 'attempt' is emitted once we receive the result of every ```.getChange()```, irrespective of whether the status
 is still PENDING or INSYNC. Only one of 'pending' or 'insync' is emitted after every 'attempt'.
 
-## Combined Changes with Polling ##
+## Combining Changes with Polling ##
 
 For the various operations which add/change/remove a zone or record, you will receive a ```changeId``` in the callback
 (if successful). If you want to, you can then poll that change until it's status is 'INSYNC'.
