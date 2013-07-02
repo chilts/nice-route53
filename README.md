@@ -116,10 +116,7 @@ If you provide a ```zoneId``` then ```zoneInfo()``` will use the ```GetHostedZon
 This command returns a list of all of the resource records for the ```zoneId``` provided:
 
 ```
-var args = {
-    zoneId : 'xxxxxxxxxxxxxx',
-};
-r53.records(args, function(err, records) {
+r53.records('xxxxxxxxxxxxxx', function(err, records) {
     console.log(records);
 });
 ```

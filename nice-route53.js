@@ -88,7 +88,7 @@ function convertGetHostedZoneResponseToZoneInfo(response) {
 }
 
 function convertListResourceRecordSetsResponseToRecords(response) {
-    var recordSets = response.ResourceRecordSets.ResourceRecordSet;
+    var recordSets = response.Body.ListResourceRecordSetsResponse.ResourceRecordSets.ResourceRecordSet;
 
     if ( !Array.isArray(recordSets) ) {
         recordSets = [ recordSets ];
@@ -282,12 +282,12 @@ Route53.prototype.createZone = function(args, pollEvery, callback) {
     });
 };
 
-Route53.prototype.records = function(opts, callback) {
+Route53.prototype.records = function(zoneId, callback) {
     var self = this;
 
     // create the args
     var args = {
-        HostedZoneId : opts.zoneId,
+        HostedZoneId : zoneId,
     };
 
     // save the records somewhere
@@ -303,17 +303,15 @@ Route53.prototype.records = function(opts, callback) {
         }
 
         // get the records
-        self.client.ListResourceRecordSets(args, function(err, result) {
+        self.client.ListResourceRecordSets(args, function(err, response) {
             if (err) return callback(makeError(err));
-
-            var response = result.Body.ListResourceRecordSetsResponse;
 
             // add these records onto the list
             var newRecords = convertListResourceRecordSetsResponseToRecords(response);
             records = records.concat(newRecords);
 
             // if this response contains IsTruncated, then we need to re-query
-            if ( response.IsTruncated === 'true' ) {
+            if ( response.Body.ListResourceRecordSetsResponse.IsTruncated === 'true' ) {
                 return listResourceRecords(
                     response.NextRecordName,
                     response.NextRecordType,
@@ -354,7 +352,7 @@ Route53.prototype.setRecord = function(opts, pollEvery, callback) {
     }
 
     // pull out all of the records
-    self.records({ zoneId : opts.zoneId}, function(err, records) {
+    self.records(opts.zoneId, function(err, records) {
         if (err) return callback(err);
 
         // loop through the records finding the one we want (if any)
@@ -379,6 +377,70 @@ Route53.prototype.setRecord = function(opts, pollEvery, callback) {
             Ttl    : opts.ttl,
             ResourceRecords : opts.values,
         });
+
+        // send this changeset to Route53
+        self.client.ChangeResourceRecordSets(args, function(err, result) {
+            if (err) return callback(makeError(err));
+
+            var changeInfo = convertChangeResourceRecordSetsResponseToChangeInfo(result);
+
+            // if we want to poll for when this change is INSYNC, do it now
+            var ee;
+            if ( pollEvery ) {
+                ee = self.pollChangeUntilInSync(changeInfo.changeId, pollEvery);
+            }
+
+            callback(null, changeInfo, ee);
+        });
+    });
+};
+
+Route53.prototype.delRecord = function(opts, pollEvery, callback) {
+    var self = this;
+
+    // see if the user wants to poll for status completion
+    if ( typeof pollEvery === 'function' ) {
+        callback = pollEvery;
+        pollEvery = undefined;
+    }
+
+    // ToDo: check that we have been given a 'zoneId', 'name' and 'type'
+
+    // make sure the name has a trailing dot
+    opts.name = addTrailingDotToDomain(opts.name);
+
+    // create the args (Changes will be added once we know whether this record will be deleted first)
+    var args = {
+        HostedZoneId : opts.zoneId,
+        Changes      : [],
+    };
+
+    // pull out all of the records
+    self.records(opts.zoneId, function(err, records) {
+        if (err) return callback(err);
+
+        // loop through the records finding the one we want (if any)
+        var newRecord;
+        records.forEach(function(record) {
+            if ( opts.name === record.name && opts.type === record.type ) {
+                args.Changes.push({
+                    Action : 'DELETE',
+                    Name   : record.name,
+                    Type   : record.type,
+                    Ttl    : record.ttl,
+                    ResourceRecords : record.values,
+                });
+            }
+        });
+
+        // check that we found a record to delete
+        if ( args.Changes.length === 0 ) {
+            return callback({
+                type : 'NiceRoute53-Client',
+                code : 'RecordNotFound',
+                msg  : 'The record you asked to delete could not be found.',
+            });
+        }
 
         // send this changeset to Route53
         self.client.ChangeResourceRecordSets(args, function(err, result) {

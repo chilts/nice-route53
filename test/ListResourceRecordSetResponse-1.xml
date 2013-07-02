@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListResourceRecordSetsResponse xmlns="https://route53.amazonaws.com/doc/2012-12-12/">
+   <ResourceRecordSets>
+      <ResourceRecordSet>
+         <Name>example.com.</Name>
+         <Type>NS</Type>
+         <TTL>172800</TTL>
+         <ResourceRecords>
+            <ResourceRecord>
+               <Value>ns-1253.awsdns-28.org.</Value>
+            </ResourceRecord>
+            <ResourceRecord>
+               <Value>ns-1917.awsdns-47.co.uk.</Value>
+            </ResourceRecord>
+            <ResourceRecord>
+               <Value>ns-991.awsdns-59.net.</Value>
+            </ResourceRecord>
+            <ResourceRecord>
+               <Value>ns-61.awsdns-07.com.</Value>
+            </ResourceRecord>
+         </ResourceRecords>
+      </ResourceRecordSet>
+      <ResourceRecordSet>
+         <Name>example.com.</Name>
+         <Type>A</Type>
+         <TTL>604800</TTL>
+         <ResourceRecords>
+            <ResourceRecord>
+               <Value>1.2.3.4</Value>
+            </ResourceRecord>
+         </ResourceRecords>
+      </ResourceRecordSet>
+      <ResourceRecordSet>
+         <Name>example.com.</Name>
+         <Type>SOA</Type>
+         <TTL>900</TTL>
+         <ResourceRecords>
+            <ResourceRecord>
+               <Value>ns-1253.awsdns-28.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400</Value>
+            </ResourceRecord>
+         </ResourceRecords>
+      </ResourceRecordSet>
+      <ResourceRecordSet>
+         <Name>blah.example.com.</Name>
+         <Type>CNAME</Type>
+         <TTL>604800</TTL>
+         <ResourceRecords>
+            <ResourceRecord>
+               <Value>other.example.net</Value>
+            </ResourceRecord>
+         </ResourceRecords>
+      </ResourceRecordSet>
+      <ResourceRecordSet>
+         <Name>example.com.</Name>
+         <Type>MX</Type>
+         <TTL>604800</TTL>
+         <ResourceRecords>
+            <ResourceRecord>
+               <Value>10 aspmx.l.google.com</Value>
+            </ResourceRecord>
+            <ResourceRecord>
+               <Value>20 alt1.aspmx.l.google.com</Value>
+            </ResourceRecord>
+            <ResourceRecord>
+               <Value>20 alt2.aspmx.l.google.com</Value>
+            </ResourceRecord>
+            <ResourceRecord>
+               <Value>30 aspmx2.googlemail.com</Value>
+            </ResourceRecord>
+            <ResourceRecord>
+               <Value>30 aspmx3.googlemail.com</Value>
+            </ResourceRecord>
+            <ResourceRecord>
+               <Value>30 aspmx4.googlemail.com</Value>
+            </ResourceRecord>
+            <ResourceRecord>
+               <Value>30 aspmx5.googlemail.com</Value>
+            </ResourceRecord>
+         </ResourceRecords>
+      </ResourceRecordSet>
+   </ResourceRecordSets>
+   <IsTruncated>false</IsTruncated>
+   <MaxItems>10</MaxItems>
+</ListResourceRecordSetsResponse>
