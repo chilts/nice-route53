@@ -16,7 +16,7 @@ var r53 = new Route53({
     secretAccessKey : 'xxx',
 });
 
-test('getChange()', function(t) {
+test('getChange.js: getChange()', function(t) {
     // mock the response
     route53
         .get('/2011-05-05/change/ZERON0WTZIPP')

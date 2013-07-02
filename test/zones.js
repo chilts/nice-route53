@@ -16,7 +16,7 @@ var r53 = new Route53({
     secretAccessKey : 'xxx',
 });
 
-test('zones test, for one zone', function(t) {
+test('zones.js: zones test, for one zone', function(t) {
     // mock the response
     route53
         .get('/2011-05-05/hostedzone')
@@ -38,7 +38,7 @@ test('zones test, for one zone', function(t) {
 
 });
 
-test('zones test, for two zones', function(t) {
+test('zones.js: zones test, for two zones', function(t) {
     // mock the response
     route53
         .get('/2011-05-05/hostedzone')

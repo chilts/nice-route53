@@ -16,7 +16,7 @@ var r53 = new Route53({
     secretAccessKey : 'xxx',
 });
 
-test('zoneInfo()', function(t) {
+test('zoneInfo.js: zoneInfo()', function(t) {
     // mock the ListHostedZones
     route53
         .get('/2011-05-05/hostedzone/Z1PA6795UKMFR9')

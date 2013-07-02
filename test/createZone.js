@@ -16,7 +16,7 @@ var r53 = new Route53({
     secretAccessKey : 'xxx',
 });
 
-test('createZone()', function(t) {
+test('createZone.js: createZone()', function(t) {
     // mock the response
     route53
         .post('/2011-05-05/hostedzone')
