@@ -28,7 +28,7 @@ test('zones.js: zones test, for one zone', function(t) {
         t.equal(err, null, 'There is no error');
 
         t.equal(zones.length, 1, 'Only one hosted zone is returned');
-        t.equal(zones[0].zoneId, 'DEADBEEF1234', 'zoneId is correct');
+        t.equal(zones[0].zoneId, 'Z1PA6795UKMFR9', 'zoneId is correct');
         t.equal(zones[0].name, 'example.com', 'name is correct (without the trailing dot)');
         t.equal(zones[0].reference, 'My Ref', 'reference is correct');
         t.equal(zones[0].comment, 'A Comment', 'comment is correct');

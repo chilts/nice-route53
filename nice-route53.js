@@ -176,7 +176,7 @@ Route53.prototype.zones = function(callback) {
     // save the zones somewhere
     var zones = [];
 
-    function listHostedZones(nextMarker, callback) {
+    function listHostedZones(nextMarker, next) {
         var args = {};
         if ( nextMarker ) {
             args.Marker = nextMarker;
@@ -190,10 +190,10 @@ Route53.prototype.zones = function(callback) {
 
             // if this response contains IsTruncated, then we need to re-query
             if ( response.Body.ListHostedZonesResponse.IsTruncated === 'true' ) {
-                return listHostedZones(response.Body.ListHostedZonesResponse.NextMarker, callback);
+                return listHostedZones(response.Body.ListHostedZonesResponse.NextMarker, next);
             }
 
-            callback(null, zones);
+            next(null, zones);
         });
     }
 
@@ -212,7 +212,7 @@ Route53.prototype.zoneInfo = function(input, callback) {
             zones.forEach(function(zone) {
                 // if we find this domain name, then call zoneInfo() with the zoneId
                 if ( zone.name === input ) {
-                    self.zoneInfo(zone.id, callback);
+                    self.zoneInfo(zone.zoneId, callback);
                 }
             });
         });
