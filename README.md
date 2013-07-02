@@ -175,6 +175,31 @@ Will give a changeset such as:
   submittedAt: '2013-06-21T00:03:26.297Z' }
 ```
 
+### .delRecord() ###
+
+This command lets you delete an existing record. Nice Route53 will complain if you try and delete a resource
+record that doesn't exist. It will issue a DELETE on the resource record if it does exist.
+
+```
+var args = {
+    zoneId : 'xxxxxxxxxxxxx',
+    name   : 'localhost.chilts.org',
+    type   : 'A',
+};
+r53.delRecord(args, function(err, res) {
+    console.log(res);
+});
+```
+
+Will give a changeset such as:
+
+```
+{ changeId: 'xxxxxxxxxxxxxx',
+  url: '/change/xxxxxxxxxxxxxx',
+  status: 'PENDING',
+  submittedAt: '2013-06-21T00:03:26.297Z' }
+```
+
 ### .getChange() ###
 
 This gets you a changeInfo response from a ```changeId```:
