@@ -207,14 +207,26 @@ Route53.prototype.zoneInfo = function(input, callback) {
 
     // if this looks like a domainName
     if ( input.match(/\./) ) {
+        input = removeTrailingDotFromDomain(input);
+
         self.zones(function(err, zones) {
             if (err) return callback(err);
+
+            var found = false;
             zones.forEach(function(zone) {
                 // if we find this domain name, then call zoneInfo() with the zoneId
                 if ( zone.name === input ) {
+                    found = true;
                     self.zoneInfo(zone.zoneId, callback);
                 }
             });
+            if ( !found ) {
+                return callback({
+                    type : 'NiceRoute53-Client',
+                    code : 'DomainNotFound',
+                    msg  : 'The domain name/zoneId you specified was not found.',
+                });
+            }
         });
     }
     else {
