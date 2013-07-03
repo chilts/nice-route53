@@ -17,7 +17,13 @@ var r53 = new Route53({
 });
 
 test('setRecord.js: setRecord()', function(t) {
-    // firstly, mock the ListResourceRecordSetsResponse
+    // firstly, mock the GetHostedZone
+    route53
+        .get('/2011-05-05/hostedzone/Z1PA6795UKMFR9')
+        .replyWithFile(200, __dirname + '/GetHostedZoneResponse.xml')
+    ;
+
+    // then, mock the ListResourceRecordSetsResponse
     route53
         .get('/2011-05-05/hostedzone/Z1PA6795UKMFR9/rrset')
         .replyWithFile(200, __dirname + '/ListResourceRecordSetResponse-1.xml')

@@ -297,47 +297,52 @@ Route53.prototype.createZone = function(args, pollEvery, callback) {
 Route53.prototype.records = function(zoneId, callback) {
     var self = this;
 
-    // create the args
-    var args = {
-        HostedZoneId : zoneId,
-    };
+    // zoneId may be a domain name or a zoneId
+    self.zoneInfo(zoneId, function(err, zoneInfo) {
+        if (err) return callback(err);
 
-    // save the records somewhere
-    var records = [];
+        // create the args
+        var args = {
+            HostedZoneId : zoneInfo.zoneId,
+        };
 
-    function listResourceRecords(nextName, nextType, nextIdentifier, callback) {
-        if ( nextName ) {
-            args.Name = nextName;
-            args.Type = nextType;
-            if ( nextIdentifier ) {
-                args.Identifier = nextIdentifier;
+        // save the records somewhere
+        var records = [];
+
+        function listResourceRecords(nextName, nextType, nextIdentifier, callback) {
+            if ( nextName ) {
+                args.Name = nextName;
+                args.Type = nextType;
+                if ( nextIdentifier ) {
+                    args.Identifier = nextIdentifier;
+                }
             }
+
+            // get the records
+            self.client.ListResourceRecordSets(args, function(err, response) {
+                if (err) return callback(makeError(err));
+
+                // add these records onto the list
+                var newRecords = convertListResourceRecordSetsResponseToRecords(response);
+                records = records.concat(newRecords);
+
+                // if this response contains IsTruncated, then we need to re-query
+                if ( response.Body.ListResourceRecordSetsResponse.IsTruncated === 'true' ) {
+                    return listResourceRecords(
+                        response.NextRecordName,
+                        response.NextRecordType,
+                        response.NextRecordIdentifier,
+                        callback
+                    );
+                }
+
+                callback(null, records);
+            });
         }
 
-        // get the records
-        self.client.ListResourceRecordSets(args, function(err, response) {
-            if (err) return callback(makeError(err));
-
-            // add these records onto the list
-            var newRecords = convertListResourceRecordSetsResponseToRecords(response);
-            records = records.concat(newRecords);
-
-            // if this response contains IsTruncated, then we need to re-query
-            if ( response.Body.ListResourceRecordSetsResponse.IsTruncated === 'true' ) {
-                return listResourceRecords(
-                    response.NextRecordName,
-                    response.NextRecordType,
-                    response.NextRecordIdentifier,
-                    callback
-                );
-            }
-
-            callback(null, records);
-        });
-    }
-
-    // start this operation
-    listResourceRecords(null, null, null, callback);
+        // start this operation
+        listResourceRecords(null, null, null, callback);
+    });
 };
 
 Route53.prototype.setRecord = function(opts, pollEvery, callback) {
