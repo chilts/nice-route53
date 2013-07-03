@@ -10,6 +10,8 @@
 This package provides the API you really wanted to Amazon's Route53 service. It uses AwsSum's
 [awssum-amazon-route53](https://github.com/awssum/awssum-amazon-route53) to talk to the real API.
 
+[![Build Status](https://api.travis-ci.org/chilts/nice-route53.png)](https://api.travis-ci.org/chilts/nice-route53.png)
+
 ## Synopsis ##
 
 ```
