@@ -424,7 +424,7 @@ Route53.prototype.delRecord = function(opts, pollEvery, callback) {
     // ToDo: check that we have been given a 'zoneId', 'name' and 'type'
 
     // make sure the name has a trailing dot
-    opts.name = addTrailingDotToDomain(opts.name);
+    opts.name = removeTrailingDotFromDomain(opts.name);
 
     // create the args (Changes will be added once we know whether this record will be deleted first)
     var args = {
