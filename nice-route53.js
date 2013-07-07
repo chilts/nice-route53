@@ -97,7 +97,7 @@ function convertListResourceRecordSetsResponseToRecords(response) {
     var records = [];
     recordSets.forEach(function(recordSet) {
         var record = {
-            name : recordSet.Name,
+            name : removeTrailingDotFromDomain(recordSet.Name),
             type : recordSet.Type,
             ttl  : recordSet.TTL,
         };
