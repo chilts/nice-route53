@@ -102,6 +102,10 @@ function convertListResourceRecordSetsResponseToRecords(response) {
             ttl  : recordSet.TTL,
         };
 
+        // if there are no resource records, then this might be an Alias!
+        if ( !recordSet.ResourceRecords ) return;
+
+        // check the resourceRecords we have
         var resourceRecords = recordSet.ResourceRecords.ResourceRecord;
         if ( !Array.isArray(resourceRecords) ) {
             resourceRecords = [ resourceRecords ];
