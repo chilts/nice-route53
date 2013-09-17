@@ -84,8 +84,6 @@ test("delRecord.js: delRecord() for a record that doesn't exist", function(t) {
         t.ok(err, 'There is an error');
         t.equal(changeInfo, undefined, 'There is no changeInfo');
 
-        console.log(err);
-
         t.equal(err.type, 'NiceRoute53-Client', 'it is a client error');
         t.equal(err.code, 'RecordNotFound', 'we cannot find this record');
         t.equal(err.msg, 'The record you asked to delete could not be found.', 'msg is correct');
