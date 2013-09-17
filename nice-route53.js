@@ -379,7 +379,7 @@ Route53.prototype.setRecord = function(opts, pollEvery, callback) {
         // loop through the records finding the one we want (if any)
         var newRecord;
         records.forEach(function(record) {
-            if ( opts.name === record.name && opts.type === record.type ) {
+            if ( opts.name === addTrailingDotToDomain(record.name) && opts.type === record.type ) {
                 args.Changes.push({
                     Action : 'DELETE',
                     Name   : record.name,

@@ -54,4 +54,44 @@ test('setRecord.js: setRecord()', function(t) {
 
 });
 
+
+test('setRecord.js: setRecord() - overwriting a current one', function(t) {
+    // firstly, mock the GetHostedZone
+    route53
+        .get('/2011-05-05/hostedzone/Z1PA6795UKMFR9')
+        .replyWithFile(200, __dirname + '/GetHostedZoneResponse.xml')
+    ;
+
+    // then, mock the ListResourceRecordSetsResponse
+    route53
+        .get('/2011-05-05/hostedzone/Z1PA6795UKMFR9/rrset')
+        .replyWithFile(200, __dirname + '/ListResourceRecordSetResponse-1.xml')
+    ;
+
+    // then, mock the ChangeResourceRecordSets
+    route53
+        .post('/2011-05-05/hostedzone/Z1PA6795UKMFR9/rrset')
+        .replyWithFile(200, __dirname + '/ChangeResourceRecordSetsResponse-1.xml')
+    ;
+
+    // set a record
+    var args = {
+        zoneId : 'Z1PA6795UKMFR9',
+        name   : 'blah.example.com',
+        type   : 'CNAME',
+        ttl    : 600,
+        values : [ 'another.example.com' ],
+    };
+    r53.setRecord(args, function(err, changeInfo) {
+        t.equal(err, null, 'There is no error');
+
+        t.equal(changeInfo.changeId, 'C2682N5HXP0BZ4', 'changeId is correct');
+        t.equal(changeInfo.status, 'PENDING', 'Change is PENDING');
+        t.equal(changeInfo.submittedAt, '2012-10-09T06:12:42.058Z', 'SubmittedAt date is the same');
+
+        t.end();
+    });
+
+});
+
 // ----------------------------------------------------------------------------
