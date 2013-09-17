@@ -154,11 +154,20 @@ function makeError(err) {
         };
     }
 
-    // an error from AWS itself
+    if ( err.Body ) {
+        // an error from AWS itself
+        return {
+            type : err.Body.ErrorResponse.Error.Type,
+            code : err.Body.ErrorResponse.Error.Code,
+            msg  : err.Body.ErrorResponse.Error.Message,
+        };
+    }
+
+    // if there is no Body, it might be a 50x error where Body is empty
     return {
-        type : err.Body.ErrorResponse.Error.Type,
-        code : err.Body.ErrorResponse.Error.Code,
-        msg  : err.Body.ErrorResponse.Error.Message,
+        type : err.StatusCode,
+        code : err.StatusCode,
+        msg  : 'Returned Status Code',
     };
 }
 
