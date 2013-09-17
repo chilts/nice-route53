@@ -38,7 +38,7 @@ test('delRecord.js: delRecord() for an existing record', function(t) {
     // delete a record
     var args = {
         zoneId : 'Z1PA6795UKMFR9',
-        name   : 'example.com.',
+        name   : 'example.com',
         type   : 'A',
         ttl    : 600,
     };
@@ -76,7 +76,7 @@ test("delRecord.js: delRecord() for a record that doesn't exist", function(t) {
     // delete a record
     var args = {
         zoneId : 'Z1PA6795UKMFR9',
-        name   : 'non-existing.example.com.',
+        name   : 'non-existing.example.com',
         type   : 'A',
         ttl    : 600,
     };
