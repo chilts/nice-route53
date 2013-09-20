@@ -1,0 +1,31 @@
+ChangeLog
+
+v0.3.5 - 2013-09-20
+	* Added test and slight code change for r53.records() for long lists of records.
+
+v0.3.4 - 2013-09-18
+	* Fix handling of truncated API calls for domains with over 100 records (thanks @lloyd)
+
+v0.3.3 - 2013-09-18
+	* Fix for returning errors when we've sent the wrong thing
+	* New test for setRecord()
+
+v0.3.2 - 2013-07-12
+	* Fix for comparisons of domains (thanks @jrgm)
+	* Fix when there is no more ResourceRecords to process
+
+v0.3.1 - 2013-07-07
+	* Fix for periods on domains
+
+v0.3.0 - 2013-07-03
+	* Fixes for periods on the end of domains
+	* Fix for records()
+	* Fixes for tests
+
+v0.2.0 - 2013-07-03
+	* Allow records() to take a zoneId rather than args
+	* Add delRecord()
+	* Lots more tests
+
+v0.1.0 - 2013-07-02
+	* Initial Release
