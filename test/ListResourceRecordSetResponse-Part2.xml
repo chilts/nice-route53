@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<ListResourceRecordSetsResponse xmlns="https://route53.amazonaws.com/doc/2011-05-05/">
+  <ResourceRecordSets>
+    <ResourceRecordSet>
+      <Name>chilts.com.</Name>
+      <Type>SOA</Type>
+      <TTL>900</TTL>
+      <ResourceRecords>
+        <ResourceRecord>
+          <Value>ns-1757.awsdns-27.co.uk. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400</Value>
+        </ResourceRecord>
+      </ResourceRecords>
+    </ResourceRecordSet>
+    <ResourceRecordSet>
+      <Name>www.chilts.com.</Name>
+      <Type>CNAME</Type>
+      <TTL>86400</TTL>
+      <ResourceRecords>
+        <ResourceRecord>
+          <Value>redirects.jit.su</Value>
+        </ResourceRecord>
+      </ResourceRecords>
+    </ResourceRecordSet>
+  </ResourceRecordSets>
+  <IsTruncated>false</IsTruncated>
+  <MaxItems>2</MaxItems>
+</ListResourceRecordSetsResponse>

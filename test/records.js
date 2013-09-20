@@ -46,4 +46,40 @@ test('records.js: records()', function(t) {
 
 });
 
+test('records.js: records() - with multiple calls', function(t) {
+    // firstly, mock the GetHostedZone
+    route53
+        .get('/2011-05-05/hostedzone/Z1WXHQ7IJR9FPX')
+        .replyWithFile(200, __dirname + '/GetHostedZoneResponse-Z1WXHQ7IJR9FPX.xml')
+    ;
+
+    // mock the ListResourceRecordSetsResponse
+    route53
+        .get('/2011-05-05/hostedzone/Z1WXHQ7IJR9FPX/rrset')
+        .replyWithFile(200, __dirname + '/ListResourceRecordSetResponse-Part1.xml')
+    ;
+
+    // mock the ListResourceRecordSetsResponse
+    route53
+        .get('/2011-05-05/hostedzone/Z1WXHQ7IJR9FPX/rrset?name=chilts.com.&type=SOA')
+        .replyWithFile(200, __dirname + '/ListResourceRecordSetResponse-Part2.xml')
+    ;
+
+    // get the zones
+    r53.records('Z1WXHQ7IJR9FPX', function(err, records) {
+        t.equal(err, null, 'There is no error');
+
+        t.equal(records.length, 4, 'there are 4 resource records');
+
+        t.equal(records[0].type, 'A', 'the first record are the A records');
+        t.equal(records[0].values.length, 9, 'there are 9 servers');
+
+        t.equal(records[3].type, 'CNAME', 'the last record is the MX servers');
+        t.equal(records[3].values.length, 1, 'there is just one CNAME here');
+
+        t.end();
+    });
+
+});
+
 // ----------------------------------------------------------------------------

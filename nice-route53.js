@@ -340,12 +340,12 @@ Route53.prototype.records = function(zoneId, callback) {
                 records = records.concat(newRecords);
 
                 // if this response contains IsTruncated, then we need to re-query
-                if ( response.Body.ListResourceRecordSetsResponse.IsTruncated === 'true' ) {
-                    response = response.Body.ListResourceRecordSetsResponse;
+                var resp = response.Body.ListResourceRecordSetsResponse;
+                if ( resp.IsTruncated === 'true' ) {
                     return listResourceRecords(
-                        response.NextRecordName,
-                        response.NextRecordType,
-                        response.NextRecordIdentifier,
+                        resp.NextRecordName,
+                        resp.NextRecordType,
+                        resp.NextRecordIdentifier,
                         callback
                     );
                 }
