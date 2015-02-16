@@ -46,6 +46,9 @@ function convertListHostedZonesResponse(response) {
     if ( Object.prototype.toString.call(response) === '[object Object]' ) {
         response = [ response ];
     }
+    if ( !response ) {
+      response = [];
+    }
 
     response.forEach(function(zone) {
         zones.push({

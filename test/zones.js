@@ -16,6 +16,22 @@ var r53 = new Route53({
     secretAccessKey : 'xxx',
 });
 
+test('zones.js: zones test, for no zones', function(t) {
+    // mock the response
+    route53
+        .get('/2011-05-05/hostedzone')
+        .replyWithFile(200, __dirname + '/ListHostedZonesResponse-3.xml')
+    ;
+
+    // get the zones
+    r53.zones(function(err, zones) {
+        t.equal(err, null, 'There is no error');
+
+        t.equal(zones.length, 0, 'Expecting no zones');
+        t.end();
+    });
+});
+
 test('zones.js: zones test, for one zone', function(t) {
     // mock the response
     route53
