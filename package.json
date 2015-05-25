@@ -1,7 +1,7 @@
 {
     "name" : "nice-route53",
     "description" : "a nicer API to Amazon's Route53",
-    "version" : "0.3.5",
+    "version" : "0.3.6",
 
     "main" : "nice-route53.js",
 
