@@ -19,7 +19,7 @@ var r53 = new Route53({
 test('zones.js: zones test, for no zones', function(t) {
     // mock the response
     route53
-        .get('/2011-05-05/hostedzone')
+        .get('/2013-04-01/hostedzone')
         .replyWithFile(200, __dirname + '/ListHostedZonesResponse-3.xml')
     ;
 
@@ -35,7 +35,7 @@ test('zones.js: zones test, for no zones', function(t) {
 test('zones.js: zones test, for one zone', function(t) {
     // mock the response
     route53
-        .get('/2011-05-05/hostedzone')
+        .get('/2013-04-01/hostedzone')
         .replyWithFile(200, __dirname + '/ListHostedZonesResponse-1.xml')
     ;
 
@@ -57,7 +57,7 @@ test('zones.js: zones test, for one zone', function(t) {
 test('zones.js: zones test, for two zones', function(t) {
     // mock the response
     route53
-        .get('/2011-05-05/hostedzone')
+        .get('/2013-04-01/hostedzone')
         .replyWithFile(200, __dirname + '/ListHostedZonesResponse-2.xml')
     ;
 

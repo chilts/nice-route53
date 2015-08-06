@@ -78,7 +78,7 @@ function convertGetHostedZoneResponseToZoneInfo(response) {
     }
 
     if ( response.DelegationSet ) {
-        zone.nameServers = response.DelegationSet.NameServers.NameServer;
+        zone.nameServers = response.DelegationSet.NameServers;
     }
 
     if ( hostedZone.Config && hostedZone.Config.Comment ) {
@@ -198,12 +198,12 @@ Route53.prototype.zones = function(callback) {
             if (err) return callback(makeError(err));
 
             // shortcut to the real response and save the zones
-            var hostedZones = response.Body.ListHostedZonesResponse.HostedZones.HostedZone;
+            var hostedZones = response.HostedZones;
             zones = zones.concat(convertListHostedZonesResponse(hostedZones));
 
             // if this response contains IsTruncated, then we need to re-query
-            if ( response.Body.ListHostedZonesResponse.IsTruncated === 'true' ) {
-                return listHostedZones(response.Body.ListHostedZonesResponse.NextMarker, next);
+            if ( response.IsTruncated === 'true' ) {
+                return listHostedZones(response.NextMarker, next);
             }
 
             next(null, zones);
