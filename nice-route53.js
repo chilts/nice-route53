@@ -122,7 +122,7 @@ function convertListResourceRecordSetsResponseToRecords(response) {
 }
 
 function convertChangeResourceRecordSetsResponseToChangeInfo(response) {
-    var changeInfo = response.Body.ChangeResourceRecordSetsResponse.ChangeInfo;
+    var changeInfo = response.ChangeInfo;
 
     return {
         changeId    : extractChangeId(changeInfo.Id),
@@ -245,7 +245,6 @@ Route53.prototype.zoneInfo = function(input, callback) {
     }
     else {
         // looks like a zoneId, so just call GetHostedZone
-        console.log("REQUEST getHostedZone!!!!");
         self.client.getHostedZone({ Id : input }, function(err, response) {
             if (err) return callback(makeError(err));
 
@@ -330,7 +329,6 @@ Route53.prototype.records = function(zoneId, callback) {
             }
 
             // get the records
-            console.log("REQUEST listResourceRecordSets!!!!");
             self.client.listResourceRecordSets(args, function(err, response) {
                 if (err) return callback(makeError(err));
 
@@ -479,9 +477,7 @@ Route53.prototype.delRecord = function(opts, pollEvery, callback) {
         }
 
         // send this changeset to Route53
-        console.log("REQUEST changeResourceRecordSets!!!!");
         self.client.changeResourceRecordSets(args, function(err, result) {
-            console.log(args, err, result);
             if (err) return callback(makeError(err));
 
             var changeInfo = convertChangeResourceRecordSetsResponseToChangeInfo(result);

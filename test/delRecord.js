@@ -16,7 +16,7 @@ var r53 = new Route53({
     secretAccessKey : 'xxx',
 });
 
-test.only('delRecord.js: delRecord() for an existing record', function(t) {
+test('delRecord.js: delRecord() for an existing record', function(t) {
     // firstly, mock the GetHostedZone
     route53
         .get('/2013-04-01/hostedzone/Z1PA6795UKMFR9')
@@ -31,7 +31,7 @@ test.only('delRecord.js: delRecord() for an existing record', function(t) {
 
     // then, mock the ChangeResourceRecordSets
     route53
-        .post('/2013-04-01/hostedzone/Z1PA6795UKMFR9/rrset')
+        .post('/2013-04-01/hostedzone/Z1PA6795UKMFR9/rrset/')
         .replyWithFile(200, __dirname + '/ChangeResourceRecordSetsResponse-1.xml')
     ;
 
@@ -47,7 +47,7 @@ test.only('delRecord.js: delRecord() for an existing record', function(t) {
 
         t.equal(changeInfo.changeId, 'C2682N5HXP0BZ4', 'changeId is correct');
         t.equal(changeInfo.status, 'PENDING', 'Change is PENDING');
-        t.equal(changeInfo.submittedAt, '2012-10-09T06:12:42.058Z', 'SubmittedAt date is the same');
+        t.equal(changeInfo.submittedAt.toISOString(), '2012-10-09T06:12:42.058Z', 'SubmittedAt date is the same');
 
         t.end();
     });
@@ -69,7 +69,7 @@ test("delRecord.js: delRecord() for a record that doesn't exist", function(t) {
 
     // then, mock the ChangeResourceRecordSets
     route53
-        .post('/2013-04-01/hostedzone/Z1PA6795UKMFR9/rrset')
+        .post('/2013-04-01/hostedzone/Z1PA6795UKMFR9/rrset/')
         .replyWithFile(200, __dirname + '/ChangeResourceRecordSetsResponse-1.xml')
     ;
 
