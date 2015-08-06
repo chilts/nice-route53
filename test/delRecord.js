@@ -35,11 +35,6 @@ test.only('delRecord.js: delRecord() for an existing record', function(t) {
         .replyWithFile(200, __dirname + '/ChangeResourceRecordSetsResponse-1.xml')
     ;
 
-    route53
-        .post('/2013-04-01/hostedzone/Z1PA6795UKMFR9/rrset')
-        .replyWithFile(200, __dirname + '/ChangeResourceRecordSetsResponse-1.xml')
-    ;
-
     // delete a record
     var args = {
         zoneId : 'Z1PA6795UKMFR9',
