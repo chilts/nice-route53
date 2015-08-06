@@ -63,9 +63,7 @@ function convertListHostedZonesResponse(response) {
 }
 
 function convertGetHostedZoneResponseToZoneInfo(response) {
-    var info = response.Body.GetHostedZoneResponse;
-
-    var hostedZone = info.HostedZone;
+    var hostedZone = response.HostedZone;
 
     var zone = {
         zoneId      : extractZoneId(hostedZone.Id),
@@ -73,14 +71,14 @@ function convertGetHostedZoneResponseToZoneInfo(response) {
         reference   : hostedZone.CallerReference,
     };
 
-    if ( info.ChangeInfo ) {
-        zone.status      = info.ChangeInfo.Status;
-        zone.submittedAt = info.ChangeInfo.SubmittedAt;
-        zone.changeId    = extractChangeId(info.ChangeInfo.Id);
+    if ( response.ChangeInfo ) {
+        zone.status      = response.ChangeInfo.Status;
+        zone.submittedAt = response.ChangeInfo.SubmittedAt;
+        zone.changeId    = extractChangeId(response.ChangeInfo.Id);
     }
 
-    if ( info.DelegationSet ) {
-        zone.nameServers = info.DelegationSet.NameServers.NameServer;
+    if ( response.DelegationSet ) {
+        zone.nameServers = response.DelegationSet.NameServers.NameServer;
     }
 
     if ( hostedZone.Config && hostedZone.Config.Comment ) {
@@ -91,7 +89,7 @@ function convertGetHostedZoneResponseToZoneInfo(response) {
 }
 
 function convertListResourceRecordSetsResponseToRecords(response) {
-    var recordSets = response.Body.ListResourceRecordSetsResponse.ResourceRecordSets.ResourceRecordSet;
+    var recordSets = response.ResourceRecordSets;
 
     if ( !Array.isArray(recordSets) ) {
         recordSets = [ recordSets ];
@@ -109,7 +107,7 @@ function convertListResourceRecordSetsResponseToRecords(response) {
         if ( !recordSet.ResourceRecords ) return;
 
         // check the resourceRecords we have
-        var resourceRecords = recordSet.ResourceRecords.ResourceRecord;
+        var resourceRecords = recordSet.ResourceRecords;
         if ( !Array.isArray(resourceRecords) ) {
             resourceRecords = [ resourceRecords ];
         }
@@ -197,7 +195,7 @@ Route53.prototype.zones = function(callback) {
         if ( nextMarker ) {
             args.Marker = nextMarker;
         }
-        self.client.ListHostedZones(args, function(err, response) {
+        self.client.listHostedZones(args, function(err, response) {
             if (err) return callback(makeError(err));
 
             // shortcut to the real response and save the zones
@@ -247,7 +245,8 @@ Route53.prototype.zoneInfo = function(input, callback) {
     }
     else {
         // looks like a zoneId, so just call GetHostedZone
-        self.client.GetHostedZone({ HostedZoneId : input }, function(err, response) {
+        console.log("REQUEST getHostedZone!!!!");
+        self.client.getHostedZone({ Id : input }, function(err, response) {
             if (err) return callback(makeError(err));
 
             var zoneInfo = convertGetHostedZoneResponseToZoneInfo(response);
@@ -331,7 +330,8 @@ Route53.prototype.records = function(zoneId, callback) {
             }
 
             // get the records
-            self.client.ListResourceRecordSets(args, function(err, response) {
+            console.log("REQUEST listResourceRecordSets!!!!");
+            self.client.listResourceRecordSets(args, function(err, response) {
                 if (err) return callback(makeError(err));
 
                 // add these records onto the list
@@ -339,12 +339,11 @@ Route53.prototype.records = function(zoneId, callback) {
                 records = records.concat(newRecords);
 
                 // if this response contains IsTruncated, then we need to re-query
-                var resp = response.Body.ListResourceRecordSetsResponse;
-                if ( resp.IsTruncated === 'true' ) {
+                if ( response.IsTruncated === 'true' ) {
                     return listResourceRecords(
-                        resp.NextRecordName,
-                        resp.NextRecordType,
-                        resp.NextRecordIdentifier,
+                        response.NextRecordName,
+                        response.NextRecordType,
+                        response.NextRecordIdentifier,
                         callback
                     );
                 }
@@ -409,7 +408,7 @@ Route53.prototype.setRecord = function(opts, pollEvery, callback) {
         });
 
         // send this changeset to Route53
-        self.client.ChangeResourceRecordSets(args, function(err, result) {
+        self.client.changeResourceRecordSets(args, function(err, result) {
             if (err) return callback(makeError(err));
 
             var changeInfo = convertChangeResourceRecordSetsResponseToChangeInfo(result);
@@ -442,29 +441,36 @@ Route53.prototype.delRecord = function(opts, pollEvery, callback) {
     // create the args (Changes will be added once we know whether this record will be deleted first)
     var args = {
         HostedZoneId : opts.zoneId,
-        Changes      : [],
+        ChangeBatch : {
+            Changes: [],    
+        }
     };
 
     // pull out all of the records
     self.records(opts.zoneId, function(err, records) {
         if (err) return callback(err);
-
         // loop through the records finding the one we want (if any)
         var newRecord;
         records.forEach(function(record) {
             if ( opts.name === record.name && opts.type === record.type ) {
-                args.Changes.push({
+                args.ChangeBatch.Changes.push({
                     Action : 'DELETE',
-                    Name   : record.name,
-                    Type   : record.type,
-                    Ttl    : record.ttl,
-                    ResourceRecords : record.values,
+                    ResourceRecordSet: {
+                        Name   : record.name,
+                        Type   : record.type,
+                        TTL    : record.ttl,
+                        ResourceRecords : record.values.map(function(r) {
+                            return {
+                                Value: r
+                            }
+                        })
+                    }
                 });
             }
         });
 
         // check that we found a record to delete
-        if ( args.Changes.length === 0 ) {
+        if ( args.ChangeBatch.Changes.length === 0 ) {
             return callback({
                 type : 'NiceRoute53-Client',
                 code : 'RecordNotFound',
@@ -473,7 +479,9 @@ Route53.prototype.delRecord = function(opts, pollEvery, callback) {
         }
 
         // send this changeset to Route53
-        self.client.ChangeResourceRecordSets(args, function(err, result) {
+        console.log("REQUEST changeResourceRecordSets!!!!");
+        self.client.changeResourceRecordSets(args, function(err, result) {
+            console.log(args, err, result);
             if (err) return callback(makeError(err));
 
             var changeInfo = convertChangeResourceRecordSetsResponseToChangeInfo(result);
@@ -492,7 +500,7 @@ Route53.prototype.delRecord = function(opts, pollEvery, callback) {
 Route53.prototype.getChange = function(changeId, callback) {
     var self = this;
 
-    self.client.GetChange({ ChangeId : changeId }, function(err, result) {
+    self.client.getChange({ ChangeId : changeId }, function(err, result) {
         if (err) return callback(makeError(err));
 
         var response = convertGetChangeResponseToChangeInfo(result);
