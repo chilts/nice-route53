@@ -133,7 +133,7 @@ function convertChangeResourceRecordSetsResponseToChangeInfo(response) {
 }
 
 function convertGetChangeResponseToChangeInfo(response) {
-    var changeInfo = response.Body.GetChangeResponse.ChangeInfo;
+    var changeInfo = response.ChangeInfo;
 
     return {
         changeId    : extractChangeId(changeInfo.Id),
@@ -186,7 +186,6 @@ function Route53(opts) {
 
 Route53.prototype.zones = function(callback) {
     var self = this;
-
     // save the zones somewhere
     var zones = [];
 
@@ -222,7 +221,6 @@ Route53.prototype.zoneInfo = function(input, callback) {
     // if this looks like a domainName
     if ( input.match(/\./) ) {
         input = removeTrailingDotFromDomain(input);
-
         self.zones(function(err, zones) {
             if (err) return callback(err);
 
@@ -324,7 +322,12 @@ Route53.prototype.records = function(zoneId, callback) {
                 args.Name = nextName;
                 args.Type = nextType;
                 if ( nextIdentifier ) {
-                    args.Identifier = nextIdentifier;
+                    delete args.Name;
+                    delete args.Type;
+                    args.StartRecordType = nextType;
+                    args.StartRecordName = nextName;
+                    //args.StartRecordIdentifier = nextIdentifier;
+
                 }
             }
 
@@ -335,9 +338,9 @@ Route53.prototype.records = function(zoneId, callback) {
                 // add these records onto the list
                 var newRecords = convertListResourceRecordSetsResponseToRecords(response);
                 records = records.concat(newRecords);
-
                 // if this response contains IsTruncated, then we need to re-query
-                if ( response.IsTruncated === 'true' ) {
+                if ( response.IsTruncated === true ) {
+                    
                     return listResourceRecords(
                         response.NextRecordName,
                         response.NextRecordType,
@@ -345,7 +348,6 @@ Route53.prototype.records = function(zoneId, callback) {
                         callback
                     );
                 }
-
                 callback(null, records);
             });
         }
@@ -496,7 +498,7 @@ Route53.prototype.delRecord = function(opts, pollEvery, callback) {
 Route53.prototype.getChange = function(changeId, callback) {
     var self = this;
 
-    self.client.getChange({ ChangeId : changeId }, function(err, result) {
+    self.client.getChange({ Id : changeId }, function(err, result) {
         if (err) return callback(makeError(err));
 
         var response = convertGetChangeResponseToChangeInfo(result);
