@@ -10,7 +10,6 @@
 var events = require('events');
 
 // npm
-var awssumAmazonRoute53 = require('awssum-amazon-route53');
 var AWS = require('aws-sdk');
 // ----------------------------------------------------------------------------
 // internal functions
@@ -179,7 +178,6 @@ function Route53(opts) {
     var self = this;
 
     // create a client
-    // self.client = new awssumAmazonRoute53.Route53(opts);
     self.client = new AWS.Route53(opts)
     return self;
 }
