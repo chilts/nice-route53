@@ -302,7 +302,6 @@ Route53.prototype.createZone = function(args, pollEvery, callback) {
         if ( pollEvery ) {
             ee = self.pollChangeUntilInSync(zone.changeId, pollEvery);
         }
-        console.log(zone);
         callback(null, zone, ee);
     });
 };
