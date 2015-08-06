@@ -30,7 +30,7 @@
     },
 
     "devDependencies" : {
-        "nock" : "0.22.x",
+        "nock" : "latest",
         "tape" : "1.1.x"
     },
 
