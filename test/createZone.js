@@ -19,7 +19,7 @@ var r53 = new Route53({
 test('createZone.js: createZone()', function(t) {
     // mock the response
     route53
-        .post('/2011-05-05/hostedzone')
+        .post('/2013-04-01/hostedzone')
         .replyWithFile(201, __dirname + '/CreateHostedZoneResponse.xml')
     ;
 
@@ -40,7 +40,7 @@ test('createZone.js: createZone()', function(t) {
 
         t.equal(result.changeId, 'C1PA6795UKMFR9', 'changeId is correct');
         t.equal(result.status, 'PENDING', 'status is correct');
-        t.equal(result.submittedAt, '2012-03-15T01:36:41.958Z', 'SubmittedAt date is the same');
+        t.equal(result.submittedAt.toISOString(), '2012-03-15T01:36:41.958Z', 'SubmittedAt date is the same');
 
         t.equal(result.nameServers.length, 4, 'four nameservers');
 

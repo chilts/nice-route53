@@ -11,7 +11,7 @@ var events = require('events');
 
 // npm
 var awssumAmazonRoute53 = require('awssum-amazon-route53');
-
+var AWS = require('aws-sdk');
 // ----------------------------------------------------------------------------
 // internal functions
 
@@ -181,8 +181,8 @@ function Route53(opts) {
     var self = this;
 
     // create a client
-    self.client = new awssumAmazonRoute53.Route53(opts);
-
+    // self.client = new awssumAmazonRoute53.Route53(opts);
+    self.client = new AWS.Route53(opts)
     return self;
 }
 
@@ -271,22 +271,19 @@ Route53.prototype.createZone = function(args, pollEvery, callback) {
     };
 
     if ( args.comment ) {
-        realArgs.Comment = args.comment;
+        realArgs.HostedZoneConfig = {
+            Comment: args.comment
+        };
     }
-
-    self.client.CreateHostedZone(realArgs, function(err, response) {
+    self.client.createHostedZone(realArgs, function(err, response) {
         if (err) {
             err = makeError(err);
             return callback(err);
         }
 
-        // get the interesting info
-        var info = response.Body.CreateHostedZoneResponse;
-
-        var hostedZone = info.HostedZone;
-        var changeInfo = info.ChangeInfo;
-        var delegationSet = info.DelegationSet;
-
+        var hostedZone = response.HostedZone;
+        var changeInfo = response.ChangeInfo;
+        var delegationSet = response.DelegationSet;
         var zone = {
             zoneId      : extractZoneId(hostedZone.Id),
             name        : hostedZone.Name.substr(0, hostedZone.Name.length-1),
@@ -294,7 +291,7 @@ Route53.prototype.createZone = function(args, pollEvery, callback) {
             status      : changeInfo.Status,
             submittedAt : changeInfo.SubmittedAt,
             changeId    : extractChangeId(changeInfo.Id),
-            nameServers : delegationSet.NameServers.NameServer,
+            nameServers : delegationSet.NameServers,
         };
         if ( hostedZone.Config && hostedZone.Config.Comment ) {
             zone.comment = hostedZone.Config.Comment;
@@ -305,7 +302,7 @@ Route53.prototype.createZone = function(args, pollEvery, callback) {
         if ( pollEvery ) {
             ee = self.pollChangeUntilInSync(zone.changeId, pollEvery);
         }
-
+        console.log(zone);
         callback(null, zone, ee);
     });
 };
