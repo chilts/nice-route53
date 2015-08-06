@@ -22,7 +22,7 @@
     "node": ">= 0.6.0"
   },
   "dependencies": {
-    "aws-sdk": "^2.1.43",
+    "aws-sdk": "^2.1.43"
   },
   "devDependencies": {
     "nock": "latest",
