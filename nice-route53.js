@@ -374,7 +374,9 @@ Route53.prototype.setRecord = function(opts, pollEvery, callback) {
     // create the args (Changes will be added once we know whether this record will be deleted first)
     var args = {
         HostedZoneId : opts.zoneId,
-        Changes      : [],
+        ChangeBatch : {
+            Changes: [],    
+        }
     };
     if ( opts.comment ) {
         args.Comment = opts.comment;
@@ -383,29 +385,46 @@ Route53.prototype.setRecord = function(opts, pollEvery, callback) {
     // pull out all of the records
     self.records(opts.zoneId, function(err, records) {
         if (err) return callback(err);
-
         // loop through the records finding the one we want (if any)
         var newRecord;
         records.forEach(function(record) {
             if ( opts.name === addTrailingDotToDomain(record.name) && opts.type === record.type ) {
-                args.Changes.push({
+                args.ChangeBatch.Changes.push({
                     Action : 'DELETE',
-                    Name   : record.name,
-                    Type   : record.type,
-                    Ttl    : record.ttl,
-                    ResourceRecords : record.values,
+                    ResourceRecordSet: {
+                        Name   : record.name,
+                        Type   : record.type,
+                        TTL    : record.ttl,
+                        ResourceRecords : record.values.map(function(r) {
+                            return {
+                                Value: r
+                            }
+                        })
+                    }
                 });
             }
         });
 
         // now add the new record
-        args.Changes.push({
+        var change = {
             Action : 'CREATE',
-            Name   : opts.name,
-            Type   : opts.type,
-            Ttl    : opts.ttl,
-            ResourceRecords : opts.values,
-        });
+            ResourceRecordSet: {
+                Name   : opts.name,
+                Type   : opts.type,
+                TTL    : opts.ttl,
+            }
+        };
+
+        if (opts.values) {
+            change
+                .ResourceRecordSet
+                    .ResourceRecords = opts.values.map(function(r) {
+                        return {
+                            Value: r
+                        }
+                    });
+        }
+        args.ChangeBatch.Changes.push(change);
 
         // send this changeset to Route53
         self.client.changeResourceRecordSets(args, function(err, result) {
