@@ -17,7 +17,10 @@
     "email": "andychilton@gmail.com",
     "url": "http://chilts.org/"
   },
-  "contributors": [],
+  "contributors": [{
+    "name": "Leonardo Rossi",
+    "email": "leonardo.rossi@gmail.com"
+  }],
   "engines": {
     "node": ">= 0.6.0"
   },
