@@ -280,6 +280,10 @@ r53.createZone(args, 10, function(err, zone, ee) {
 In the cases where the change operation fails (ie. ```err``` is set, then both the ```zone``` and ```ee``` will be
 undefined.
 
+## Changes ##
+
+* v1.0.0 (2015-08-10))
+  * switch from AwsSum to the official aws-sdk (thanks to [Leonardo Rossi](https://github.com/leorossi))
 
 ## License ##
 
