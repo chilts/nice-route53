@@ -1,46 +1,45 @@
 {
-    "name" : "nice-route53",
-    "description" : "a nicer API to Amazon's Route53",
-    "version" : "0.3.6",
-
-    "main" : "nice-route53.js",
-
-    "homepage" : "https://github.com/chilts/nice-route53/",
-    "repository" : {
-        "type" : "git",
-        "url" : "https://github.com/chilts/nice-route53.git"
-    },
-    "bugs" : {
-        "url" : "https://github.com/chilts/nice-route53/issues",
-        "email" : "andychilton@gmail.com"
-    },
-
-    "author" : {
-        "name" : "Andrew Chilton",
-        "email" : "andychilton@gmail.com",
-        "url" : "http://chilts.org/"
-    },
-    "contributors" : [],
-
-    "engines" : {
-        "node" : ">= 0.6.0"
-    },
-    "dependencies" : {
-        "awssum-amazon-route53" : "1.0.x"
-    },
-
-    "devDependencies" : {
-        "nock" : "0.22.x",
-        "tape" : "1.1.x"
-    },
-
-    "scripts" : {
-        "test" : "set -e; for FILE in test/*.js; do node $FILE; done"
-    },
-
-    "license" : "MIT",
-
-    "keywords" : [
-        "api", "amazon", "aws", "route53", "awssum-helper"
-    ]
+  "name": "nice-route53",
+  "description": "a nicer API to Amazon's Route53",
+  "version": "0.3.6",
+  "main": "nice-route53.js",
+  "homepage": "https://github.com/chilts/nice-route53/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chilts/nice-route53.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chilts/nice-route53/issues",
+    "email": "andychilton@gmail.com"
+  },
+  "author": {
+    "name": "Andrew Chilton",
+    "email": "andychilton@gmail.com",
+    "url": "http://chilts.org/"
+  },
+  "contributors": [{
+    "name": "Leonardo Rossi",
+    "email": "leonardo.rossi@gmail.com"
+  }],
+  "engines": {
+    "node": ">= 0.6.0"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1.43"
+  },
+  "devDependencies": {
+    "nock": "latest",
+    "tape": "1.1.x"
+  },
+  "scripts": {
+    "test": "set -e; for FILE in test/*.js; do node $FILE; done"
+  },
+  "license": "MIT",
+  "keywords": [
+    "api",
+    "amazon",
+    "aws",
+    "route53",
+    "awssum-helper"
+  ]
 }

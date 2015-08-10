@@ -58,6 +58,7 @@
   <IsTruncated>true</IsTruncated>
   <NextRecordName>chilts.com.</NextRecordName>
   <NextRecordType>SOA</NextRecordType>
+  <NextRecordIdentifier>testIdentifier</NextRecordIdentifier>
   <MaxItems>2</MaxItems>
 </ListResourceRecordSetsResponse>
 

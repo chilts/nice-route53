@@ -19,7 +19,7 @@ var r53 = new Route53({
 test('zoneInfo.js: zoneInfo() using a zoneId', function(t) {
     // mock the GetHostedZone
     route53
-        .get('/2011-05-05/hostedzone/Z1PA6795UKMFR9')
+        .get('/2013-04-01/hostedzone/Z1PA6795UKMFR9')
         .replyWithFile(200, __dirname + '/GetHostedZoneResponse.xml')
     ;
 
@@ -41,13 +41,13 @@ test('zoneInfo.js: zoneInfo() using a zoneId', function(t) {
 test('zoneInfo.js: zoneInfo() using a domain name', function(t) {
     // mock the ListHostedZones
     route53
-        .get('/2011-05-05/hostedzone')
+        .get('/2013-04-01/hostedzone')
         .replyWithFile(200, __dirname + '/ListHostedZonesResponse-1.xml')
     ;
 
     // mock the GetHostedZones
     route53
-        .get('/2011-05-05/hostedzone/Z1PA6795UKMFR9')
+        .get('/2013-04-01/hostedzone/Z1PA6795UKMFR9')
         .replyWithFile(200, __dirname + '/GetHostedZoneResponse.xml')
     ;
 
