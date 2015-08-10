@@ -7,8 +7,7 @@
                                                            
 ```
 
-This package provides the API you really wanted to Amazon's Route53 service. It uses AwsSum's
-[awssum-amazon-route53](https://github.com/awssum/awssum-amazon-route53) to talk to the real API.
+This package provides the API you really wanted to Amazon's Route53 service.
 
 [![Build Status](https://api.travis-ci.org/chilts/nice-route53.png)](https://api.travis-ci.org/chilts/nice-route53.png)
 
@@ -80,8 +79,8 @@ An example of a new zone is:
 
 Caveat: if you try to create a zone for ```example.org```, we send a ```CallerReference``` of ```example.org```. This
 is so that you will get an error if you try to create a second zone for the same domain name. If you *actually* want to
-create a 2nd zone for the same domain name, you should use the low-level API for ```CreateHostedZone``` that
-awssum-amazon-route53 provides - this library won't do that for you.
+create a 2nd zone for the same domain name, you should use the low-level API using `aws-sdk` from Amazon. This library
+won't do that for you.
 
 ### .zoneInfo() ###
 
