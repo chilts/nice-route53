@@ -143,31 +143,10 @@ function convertGetChangeResponseToChangeInfo(response) {
 }
 
 function makeError(err) {
-    // if this is an error from AwsSum
-    if ( err.Code === 'AwsSum-Request' ) {
-        return {
-            type    : 'Request',
-            code    : err.OriginalError.code,
-            msg     : '' + err.OriginalError,
-            syscall : err.OriginalError.syscall,
-            errno   : err.OriginalError.errno,
-        };
-    }
-
-    if ( err.Body ) {
-        // an error from AWS itself
-        return {
-            type : err.Body.ErrorResponse.Error.Type,
-            code : err.Body.ErrorResponse.Error.Code,
-            msg  : err.Body.ErrorResponse.Error.Message,
-        };
-    }
-
-    // if there is no Body, it might be a 50x error where Body is empty
     return {
-        type : err.StatusCode,
-        code : err.StatusCode,
-        msg  : 'Returned Status Code',
+        type : err.code,
+        code : err.statusCode,
+        msg  : err.message
     };
 }
 
