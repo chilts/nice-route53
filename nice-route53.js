@@ -179,7 +179,7 @@ Route53.prototype.zones = function(callback) {
             zones = zones.concat(convertListHostedZonesResponse(hostedZones));
 
             // if this response contains IsTruncated, then we need to re-query
-            if ( response.IsTruncated === 'true' ) {
+            if ( response.IsTruncated === true ) {
                 return listHostedZones(response.NextMarker, next);
             }
 
@@ -317,7 +317,7 @@ Route53.prototype.records = function(zoneId, callback) {
                 records = records.concat(newRecords);
                 // if this response contains IsTruncated, then we need to re-query
                 if ( response.IsTruncated === true ) {
-                    
+
                     return listResourceRecords(
                         response.NextRecordName,
                         response.NextRecordType,
@@ -352,7 +352,7 @@ Route53.prototype.setRecord = function(opts, pollEvery, callback) {
     var args = {
         HostedZoneId : opts.zoneId,
         ChangeBatch : {
-            Changes: [],    
+            Changes: [],
         }
     };
     if ( opts.comment ) {
@@ -438,7 +438,7 @@ Route53.prototype.delRecord = function(opts, pollEvery, callback) {
     var args = {
         HostedZoneId : opts.zoneId,
         ChangeBatch : {
-            Changes: [],    
+            Changes: [],
         }
     };
 
