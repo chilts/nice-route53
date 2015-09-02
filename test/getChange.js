@@ -19,7 +19,7 @@ var r53 = new Route53({
 test('getChange.js: getChange()', function(t) {
     // mock the response
     route53
-        .get('/2011-05-05/change/ZERON0WTZIPP')
+        .get('/2013-04-01/change/ZERON0WTZIPP')
         .replyWithFile(200, __dirname + '/GetChangeResponse.xml')
     ;
 
@@ -29,7 +29,7 @@ test('getChange.js: getChange()', function(t) {
 
         t.equal(changeInfo.changeId, 'ZERON0WTZIPP', 'changeId is correct');
         t.equal(changeInfo.status, 'PENDING', 'Change is PENDING');
-        t.equal(changeInfo.submittedAt, '2011-09-10T01:36:41.958Z', 'SubmittedAt date is the same');
+        t.equal(changeInfo.submittedAt.toISOString(), '2011-09-10T01:36:41.958Z', 'SubmittedAt date is the same');
 
         t.end();
     });

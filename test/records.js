@@ -19,13 +19,13 @@ var r53 = new Route53({
 test('records.js: records()', function(t) {
     // firstly, mock the GetHostedZone
     route53
-        .get('/2011-05-05/hostedzone/Z1PA6795UKMFR9')
+        .get('/2013-04-01/hostedzone/Z1PA6795UKMFR9')
         .replyWithFile(200, __dirname + '/GetHostedZoneResponse.xml')
     ;
 
     // mock the ListResourceRecordSetsResponse
     route53
-        .get('/2011-05-05/hostedzone/Z1PA6795UKMFR9/rrset')
+        .get('/2013-04-01/hostedzone/Z1PA6795UKMFR9/rrset')
         .replyWithFile(200, __dirname + '/ListResourceRecordSetResponse-1.xml')
     ;
 
@@ -49,19 +49,19 @@ test('records.js: records()', function(t) {
 test('records.js: records() - with multiple calls', function(t) {
     // firstly, mock the GetHostedZone
     route53
-        .get('/2011-05-05/hostedzone/Z1WXHQ7IJR9FPX')
+        .get('/2013-04-01/hostedzone/Z1WXHQ7IJR9FPX')
         .replyWithFile(200, __dirname + '/GetHostedZoneResponse-Z1WXHQ7IJR9FPX.xml')
     ;
 
     // mock the ListResourceRecordSetsResponse
     route53
-        .get('/2011-05-05/hostedzone/Z1WXHQ7IJR9FPX/rrset')
+        .get('/2013-04-01/hostedzone/Z1WXHQ7IJR9FPX/rrset')
         .replyWithFile(200, __dirname + '/ListResourceRecordSetResponse-Part1.xml')
     ;
 
     // mock the ListResourceRecordSetsResponse
     route53
-        .get('/2011-05-05/hostedzone/Z1WXHQ7IJR9FPX/rrset?name=chilts.com.&type=SOA')
+        .get('/2013-04-01/hostedzone/Z1WXHQ7IJR9FPX/rrset?name=chilts.com.&type=SOA')
         .replyWithFile(200, __dirname + '/ListResourceRecordSetResponse-Part2.xml')
     ;
 
