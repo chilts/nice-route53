@@ -61,14 +61,13 @@ test('records.js: records() - with multiple calls', function(t) {
 
     // mock the ListResourceRecordSetsResponse
     route53
-        .get('/2013-04-01/hostedzone/Z1WXHQ7IJR9FPX/rrset?name=chilts.com.&type=SOA')
+        .get('/2013-04-01/hostedzone/Z1WXHQ7IJR9FPX/rrset?identifier=testIdentifier&name=chilts.com.&type=SOA')
         .replyWithFile(200, __dirname + '/ListResourceRecordSetResponse-Part2.xml')
     ;
 
     // get the zones
     r53.records('Z1WXHQ7IJR9FPX', function(err, records) {
         t.equal(err, null, 'There is no error');
-
         t.equal(records.length, 4, 'there are 4 resource records');
 
         t.equal(records[0].type, 'A', 'the first record are the A records');

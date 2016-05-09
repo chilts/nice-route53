@@ -296,18 +296,12 @@ Route53.prototype.records = function(zoneId, callback) {
 
         function listResourceRecords(nextName, nextType, nextIdentifier, callback) {
             if ( nextName ) {
-                args.Name = nextName;
-                args.Type = nextType;
+                args.StartRecordType = nextType;
+                args.StartRecordName = nextName;
                 if ( nextIdentifier ) {
-                    delete args.Name;
-                    delete args.Type;
-                    args.StartRecordType = nextType;
-                    args.StartRecordName = nextName;
-                    //args.StartRecordIdentifier = nextIdentifier;
-
+                    args.StartRecordIdentifier = nextIdentifier;
                 }
             }
-
             // get the records
             self.client.listResourceRecordSets(args, function(err, response) {
                 if (err) return callback(makeError(err));
