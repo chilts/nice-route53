@@ -176,6 +176,34 @@ Will give a changeset such as:
   submittedAt: '2013-06-21T00:03:26.297Z' }
 ```
 
+### .upsertRecord() ###
+
+This command lets you upsert a record whether or not it already exists. If it exists Route53 will handle it, otherwise Route53 will create it.
+
+```
+var args = {
+    zoneId : 'xxxxxxxxxxxxx',
+    name   : 'localhost.chilts.org',
+    type   : 'A',
+    ttl    : 600,
+    values : [
+        '127.0.0.1',
+    ],
+};
+r53.upsertRecord(args, function(err, res) {
+    console.log(res);
+});
+```
+
+Will give a changeset such as:
+
+```
+{ changeId: 'xxxxxxxxxxxxxx',
+  url: '/change/xxxxxxxxxxxxxx',
+  status: 'PENDING',
+  submittedAt: '2013-06-21T00:03:26.297Z' }
+```
+
 ### .delRecord() ###
 
 This command lets you delete an existing record. Nice Route53 will complain if you try and delete a resource
