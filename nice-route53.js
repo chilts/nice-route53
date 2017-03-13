@@ -414,6 +414,68 @@ Route53.prototype.setRecord = function(opts, pollEvery, callback) {
     });
 };
 
+Route53.prototype.upsertRecord = function(opts, pollEvery, callback) {
+    var self = this;
+
+    // see if the user wants to poll for status completion
+    if ( typeof pollEvery === 'function' ) {
+        callback = pollEvery;
+        pollEvery = undefined;
+    }
+
+    // ToDo: check that we have been given a 'zoneId', 'name', 'type', 'ttl' and 'values'.
+
+    // make sure the name has a trailing dot
+    opts.name = addTrailingDotToDomain(opts.name);
+
+    // create the args (Changes will be added once we know whether this record will be deleted first)
+    var args = {
+        HostedZoneId : opts.zoneId,
+        ChangeBatch : {
+            Changes: [],
+        }
+    };
+    if ( opts.comment ) {
+        args.Comment = opts.comment;
+    }
+
+    // now upsert the record
+    var change = {
+        Action : 'UPSERT',
+        ResourceRecordSet: {
+            Name   : opts.name,
+            Type   : opts.type,
+            TTL    : opts.ttl,
+        }
+    };
+
+    if (opts.values) {
+        change
+            .ResourceRecordSet
+                .ResourceRecords = opts.values.map(function(r) {
+                    return {
+                        Value: r
+                    }
+                });
+    }
+    args.ChangeBatch.Changes.push(change);
+
+    // send this changeset to Route53
+    self.client.changeResourceRecordSets(args, function(err, result) {
+        if (err) return callback(makeError(err));
+
+        var changeInfo = convertChangeResourceRecordSetsResponseToChangeInfo(result);
+
+        // if we want to poll for when this change is INSYNC, do it now
+        var ee;
+        if ( pollEvery ) {
+            ee = self.pollChangeUntilInSync(changeInfo.changeId, pollEvery);
+        }
+
+        callback(null, changeInfo, ee);
+    });
+};
+
 Route53.prototype.delRecord = function(opts, pollEvery, callback) {
     var self = this;
 
