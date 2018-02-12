@@ -97,9 +97,11 @@ function convertListResourceRecordSetsResponseToRecords(response) {
     var records = [];
     recordSets.forEach(function(recordSet) {
         var record = {
-            name : removeTrailingDotFromDomain(recordSet.Name),
-            type : recordSet.Type,
-            ttl  : recordSet.TTL,
+            name          : removeTrailingDotFromDomain(recordSet.Name),
+            type          : recordSet.Type,
+            ttl           : recordSet.TTL,
+            setIdentifier : recordSet.SetIdentifier,
+            weight        : recordSet.Weight,
         };
 
         // if there are no resource records, then this might be an Alias!
@@ -363,9 +365,11 @@ Route53.prototype.setRecord = function(opts, pollEvery, callback) {
                 args.ChangeBatch.Changes.push({
                     Action : 'DELETE',
                     ResourceRecordSet: {
-                        Name   : record.name,
-                        Type   : record.type,
-                        TTL    : record.ttl,
+                        Name          : record.name,
+                        Type          : record.type,
+                        TTL           : record.ttl,
+                        SetIdentifier : record.setIdentifier,
+                        Weight        : record.weight,
                         ResourceRecords : record.values.map(function(r) {
                             return {
                                 Value: r
@@ -385,6 +389,19 @@ Route53.prototype.setRecord = function(opts, pollEvery, callback) {
                 TTL    : opts.ttl,
             }
         };
+
+
+        if ( opts.setIdentifier ) {
+            change
+                .ResourceRecordSet
+                    .SetIdentifier = opts.setIdentifier;
+        }
+
+        if ( opts.weight ) {
+            change
+                .ResourceRecordSet
+                    .Weight = opts.weight;
+        }
 
         if (opts.values) {
             change
@@ -449,6 +466,19 @@ Route53.prototype.upsertRecord = function(opts, pollEvery, callback) {
         }
     };
 
+    if ( opts.setIdentifier ) {
+        change
+            .ResourceRecordSet
+                .SetIdentifier = opts.setIdentifier;
+    }
+
+    if ( opts.weight ) {
+        change
+	    .ResourceRecordSet
+                .Weight = opts.weight;
+    }
+
+
     if (opts.values) {
         change
             .ResourceRecordSet
@@ -508,9 +538,11 @@ Route53.prototype.delRecord = function(opts, pollEvery, callback) {
                 args.ChangeBatch.Changes.push({
                     Action : 'DELETE',
                     ResourceRecordSet: {
-                        Name   : record.name,
-                        Type   : record.type,
-                        TTL    : record.ttl,
+                        Name          : record.name,
+                        Type          : record.type,
+                        TTL           : record.ttl,
+                        SetIdentifier : record.setIdentifier,
+                        Weight        : record.weight,
                         ResourceRecords : record.values.map(function(r) {
                             return {
                                 Value: r
