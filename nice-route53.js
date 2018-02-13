@@ -359,7 +359,6 @@ Route53.prototype.setRecord = function(opts, pollEvery, callback) {
     self.records(opts.zoneId, function(err, records) {
         if (err) return callback(err);
         // loop through the records finding the one we want (if any)
-        var newRecord;
         records.forEach(function(record) {
             if ( opts.name === addTrailingDotToDomain(record.name) && opts.type === record.type ) {
                 args.ChangeBatch.Changes.push({
@@ -532,7 +531,6 @@ Route53.prototype.delRecord = function(opts, pollEvery, callback) {
     self.records(opts.zoneId, function(err, records) {
         if (err) return callback(err);
         // loop through the records finding the one we want (if any)
-        var newRecord;
         records.forEach(function(record) {
             if ( opts.name === record.name && opts.type === record.type ) {
                 args.ChangeBatch.Changes.push({
