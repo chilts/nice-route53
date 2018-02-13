@@ -466,26 +466,19 @@ Route53.prototype.upsertRecord = function(opts, pollEvery, callback) {
     };
 
     if ( opts.setIdentifier ) {
-        change
-            .ResourceRecordSet
-                .SetIdentifier = opts.setIdentifier;
+        change.ResourceRecordSet.SetIdentifier = opts.setIdentifier;
     }
 
     if ( opts.weight ) {
-        change
-	    .ResourceRecordSet
-                .Weight = opts.weight;
+        change.ResourceRecordSet.Weight = opts.weight;
     }
 
-
     if (opts.values) {
-        change
-            .ResourceRecordSet
-                .ResourceRecords = opts.values.map(function(r) {
-                    return {
-                        Value: r
-                    }
-                });
+        change.ResourceRecordSet.ResourceRecords = opts.values.map(function(r) {
+          return {
+            Value: r
+          }
+        });
     }
     args.ChangeBatch.Changes.push(change);
 
