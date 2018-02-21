@@ -525,7 +525,9 @@ Route53.prototype.delRecord = function(opts, pollEvery, callback) {
         if (err) return callback(err);
         // loop through the records finding the one we want (if any)
         records.forEach(function(record) {
-            if ( opts.name === record.name && opts.type === record.type ) {
+            if ( opts.name === record.name && opts.type === record.type &&
+                 ( ! opts.setIdentifier ||
+                   opts.setIdentifier == record.setIdentifier )) {
                 args.ChangeBatch.Changes.push({
                     Action : 'DELETE',
                     ResourceRecordSet: {
