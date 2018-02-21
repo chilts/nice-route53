@@ -37,6 +37,10 @@ function addTrailingDotToDomain(domain) {
     return domain + '.';
 }
 
+function decodeAsterisk(str) {
+    return str.replace("\\052", "*");
+}
+
 function convertListHostedZonesResponse(response) {
     // the list to return
     var zones = [];
@@ -242,7 +246,7 @@ Route53.prototype.createZone = function(args, pollEvery, callback) {
 
     var realArgs = {
         Name            : args.name,
-        CallerReference : args.name,
+        CallerReference : args.reference || args.name,
     };
 
     if ( args.comment ) {
@@ -360,7 +364,7 @@ Route53.prototype.setRecord = function(opts, pollEvery, callback) {
         if (err) return callback(err);
         // loop through the records finding the one we want (if any)
         records.forEach(function(record) {
-            if ( opts.name === addTrailingDotToDomain(record.name) && opts.type === record.type ) {
+            if ( decodeAsterisk(opts.name) === addTrailingDotToDomain(decodeAsterisk(record.name)) && opts.type === record.type ) {
                 args.ChangeBatch.Changes.push({
                     Action : 'DELETE',
                     ResourceRecordSet: {
@@ -410,6 +414,11 @@ Route53.prototype.setRecord = function(opts, pollEvery, callback) {
                             Value: r
                         }
                     });
+        } else if (opts.alias) {
+            delete change.ResourceRecordSet.TTL;
+            change
+                .ResourceRecordSet
+                    .AliasTarget = opts.alias;
         }
         args.ChangeBatch.Changes.push(change);
 

@@ -17,15 +17,17 @@
     "email": "andychilton@gmail.com",
     "url": "http://chilts.org/"
   },
-  "contributors": [{
-    "name": "Leonardo Rossi",
-    "email": "leonardo.rossi@gmail.com"
-  }],
+  "contributors": [
+    {
+      "name": "Leonardo Rossi",
+      "email": "leonardo.rossi@gmail.com"
+    }
+  ],
   "engines": {
     "node": ">= 0.6.0"
   },
   "dependencies": {
-    "aws-sdk": "^2.6.12"
+    "aws-sdk": "^2.184.0"
   },
   "devDependencies": {
     "nock": "^9.0.0",
