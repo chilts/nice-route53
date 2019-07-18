@@ -11,6 +11,15 @@ This package provides the API you really wanted to Amazon's Route53 service.
 
 [![Build Status](https://api.travis-ci.org/chilts/nice-route53.png)](https://api.travis-ci.org/chilts/nice-route53.png)
 
+**UNMAINTAINED (since 2019-07-18)**
+
+This project is no longer maintined and therefore no new features will be added. However fixes for major bugs will be
+merged and released if a PR is submitted.
+
+We suggest you use Amazon's official [aws-sdk](https://www.npmjs.com/package/aws-sdk) from now on.
+
+Many thanks.
+
 ## Synopsis ##
 
 ```
