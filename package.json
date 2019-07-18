@@ -1,7 +1,7 @@
 {
   "name": "nice-route53",
   "description": "a nicer API to Amazon's Route53",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "main": "nice-route53.js",
   "homepage": "https://github.com/chilts/nice-route53/",
   "repository": {
